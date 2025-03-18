@@ -24,11 +24,12 @@ def login():
 
         if rol:
             session["usuario"] = usuario  # Guarda sesión
-            return render_template("homeadmin.html") if rol == "admin" else render_template("home.html")
+            return render_template("homeadmin.html", usuario=session["usuario"]) if rol == "admin" else render_template("home.html", usuario=session["usuario"])
         else:
             return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
 
     return render_template("login.html")  # Muestra el formulario de login
+
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -74,10 +75,38 @@ def home():
         return render_template("home.html", usuario=session["usuario"])
     return redirect(url_for("login"))
 
+@app.route("/homeadmin")
+def homeadmin():
+    return render_template("homeadmin.html", usuario=session["usuario"])
+
 @app.route("/logout")
 def logout():
     session.pop("usuario", None)  # Eliminar sesión
     return redirect(url_for("login"))
 
+@app.route("/projectes", methods=["GET", "POST"])
+def projectes():
+    if request.method == "POST":
+        usuario=session["usuario"]
+        Nomprojecte = request.form["Nomprojecte"]
+        contingut = request.form["contingut"]
+
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lector = csv.DictReader(archivo)
+            for fila in lector:
+                if fila["usuario"] == usuario and fila["Nomprojecte"] == Nomprojecte:
+                    return render_template("projectes.html", mensaje="El projecte ja ha sigut creat")
+                else:
+                    with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
+                        escritor = csv.writer(archivo)
+                        escritor.writerow([usuario,Nomprojecte,contingut])
+
+                    return render_template("projectes.html", mensaje="Creado")
+    return render_template("projectes.html")
+
+
+
+
+
 if __name__ == "__main__":
-    app.run(host="192.168.221.217" ,debug=True)
+    app.run(host="192.168.221.190" ,debug=True)

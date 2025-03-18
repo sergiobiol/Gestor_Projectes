@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes</title>
+    <title>Nou projecte</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Notes</h2>
+    <h2>Nou projecte</h2>
     {% if mensaje %}
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
-        <label>Buscar Usuario:</label>
-        <input type="text" name="nota" required>
+        <label>Nom nou projecte:</label>
+        <input type="text" name="Nomprojecte" required>
+        <br></br>
+        <label>Contingut projecte:</label>
+        <input type="text" name="contingut" required>
         <br></br>
         <button type="submit">Ingresar</button>
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('homeadmin') }}">Home</a>
     </form>
 </body>
 </html>
