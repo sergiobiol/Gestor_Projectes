@@ -11,7 +11,7 @@ def verificar_credenciales(usuario, contraseña):
         lector = csv.DictReader(archivo)
         for fila in lector:
             if fila["usuario"] == usuario and fila["contraseña"] == contraseña:
-                return "admin" if fila["administrador"] == "1" else "user"  # Devuelve el rol del usuario
+                return "admin" if fila["admin"] == "1" else "user"  # Devuelve el rol del usuario
     return False  # Si no coincide ninguna credencial
 
 @app.route("/", methods=["GET", "POST"])
@@ -37,8 +37,11 @@ def signup():
     if request.method == "POST":
         usuario = request.form["usuario"]
         contraseña = request.form["contraseña"]
+        admin = request.form["admin"]
+        comprobar=session["admin"]
+        if comprobar== "0":
+            return redirect(url_for("home"))
         
-
         archivo_existe = os.path.exists("usuarios.csv")
         
         with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
@@ -57,7 +60,10 @@ def signup():
                 escritor.writerow(["usuario", "contraseña"])
             
             # Escribir el nuevo usuario
-            escritor.writerow([usuario, contraseña])
+            if admin == "1":
+                escritor.writerow([usuario, contraseña, 1])
+            else:
+                escritor.writerow([usuario, contraseña, 0])
 
         # Redirigir al login después de registrar el usuario
         return redirect(url_for("login"))
@@ -94,7 +100,7 @@ def projectes():
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
-                if fila["usuario"] == usuario and fila["Nomprojecte"] == Nomprojecte:
+                if fila["Nomprojecte"] == Nomprojecte:
                     return render_template("projectes.html", mensaje="El projecte ja ha sigut creat")
                 else:
                     with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
@@ -109,4 +115,4 @@ def projectes():
 
 
 if __name__ == "__main__":
-    app.run(host="192.168.221.190" ,debug=True)
+    app.run(host="192.168.191.89" ,debug=True)
