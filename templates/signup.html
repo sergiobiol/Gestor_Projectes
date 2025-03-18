@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Registrar usuari</h2>
+    {% if mensaje %}
+        <p style="color: red;">{{ mensaje }}</p>
+    {% endif %}
+    <form method="POST">
+        <label>Usuario:</label>
+        <input type="text" name="usuario" required>
+        <br>
+        <label>Contraseña:</label>
+        <input type="password" name="contraseña" required>
+        <br>
+        <button type="submit">Ingresar</button>
+    </form>
+</body>
+</html>
