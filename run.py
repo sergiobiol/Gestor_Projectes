@@ -21,8 +21,9 @@ def login():
         contraseña = request.form["contraseña"]
 
         rol = verificar_credenciales(usuario, contraseña)
-
-        if rol:
+        #Proces per revisar si l'usuari té rol administrador tenint en conte si al camp de admin CSV es 1
+        
+        if rol: 
             session["usuario"] = usuario  # Guarda sesión
             return render_template("homeadmin.html", usuario=session["usuario"]) if rol == "admin" else render_template("home.html", usuario=session["usuario"])
         else:
@@ -70,8 +71,25 @@ def signup():
         
     return render_template("signup.html")
 
+'''@'''
+
 @app.route("/notes", methods=["GET", "POST"])
 def notes():
+    if request.method == "POST":
+        usuario=session["usuario"]
+        Nomprojecte=session["Nomprojecte"]
+        asignatura=session["asignatura"]
+        contingut=session["contingut"]
+        buscusuari = request.form["buscusuari"]
+        buscasignatura = request.form["buscasignatura"]
+        
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)
+            for fila in lectura:
+                if fila["buscasignatura"] == asignatura:
+                    return render_template("projectes.html", mensaje="El projecte ja ha sigut creat")
+        
+
 
     return render_template("notes.html")
 
@@ -87,9 +105,8 @@ def homeadmin():
 
 @app.route("/logout")
 def logout():
-    session.pop("usuario", None)  # Eliminar sesión
-    return redirect(url_for("login"))
-
+    session.clear()  # Eliminar toda la sesión (usuario, rol, etc.)
+    return redirect(url_for("login"))  # Redirigir al login
 
 @app.route("/projectes", methods=["GET", "POST"])
 def projectes():
@@ -97,23 +114,22 @@ def projectes():
         usuario=session["usuario"]
         Nomprojecte = request.form["Nomprojecte"]
         contingut = request.form["contingut"]
+        asignatura = request.form["asignatura"]
 
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
-                if fila["usuario"] == usuario and fila["Nomprojecte"] == Nomprojecte:
+                if fila["usuario"] == usuario and fila["Nomprojecte"] == Nomprojecte and fila["asignatura"] == asignatura:
                     return render_template("projectes.html", mensaje="El projecte ja ha sigut creat")
                 
         with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
             escritor = csv.writer(archivo)
-            escritor.writerow([Nomprojecte,contingut,usuario])
+            escritor.writerow([Nomprojecte,contingut,usuario,asignatura])
 
             return render_template("projectes.html", mensaje="Creado")
     return render_template("projectes.html")
 
 
-
-
-
+#Start Program
 if __name__ == "__main__":
-    app.run(host="192.168.191.89" ,debug=True)
+    app.run(host="192.168.221.251" ,debug=True)
