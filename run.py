@@ -71,27 +71,47 @@ def signup():
         
     return render_template("signup.html")
 
-'''@'''
 
-@app.route("/notes", methods=["GET", "POST"])
+@app.route('/signup')
+def blockSignup():
+    if "usuario" not in session or session.get("rol") != "admin":
+        return render_template("403.html"), 403  # Acceso denegado
+    return render_template('signup.html')
+
+'''def verificar_credenciales(usuario, contraseña):
+    with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
+        lector = csv.DictReader(archivo)
+        for fila in lector:
+            if fila["usuario"] == usuario and fila["contraseña"] == contraseña:
+                return "admin" if fila["admin"] == "1" else "user"  # Devuelve el rol del usuario
+    return False  # Si no coincide ninguna credencial'''
+
+
+@app.route("/mostraprojectes", methods=["GET", "POST"])
 def notes():
     if request.method == "POST":
-        usuario=session["usuario"]
-        Nomprojecte=session["Nomprojecte"]
-        asignatura=session["asignatura"]
-        contingut=session["contingut"]
-        buscusuari = request.form["buscusuari"]
-        buscasignatura = request.form["buscasignatura"]
-        
+        usuario = session.get("usuario")
+        Nomprojecte = session.get("Nomprojecte")
+        asignatura = session.get("asignatura")
+        contingut = session.get("contingut")
+        buscusuari = request.form.get("buscusuari")
+        buscasignatura = request.form.get("buscasignatura")
+        datos = []
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)
             for fila in lectura:
-                if fila["buscasignatura"] == asignatura:
-                    return render_template("projectes.html", mensaje="El projecte ja ha sigut creat")
+                if (fila["asignatura"].strip().lower() == buscasignatura.strip().lower() and
+                fila["usuario"].strip().lower() == buscusuari.strip().lower()):
+                    datos.append({
+                            "usuario": fila["usuario"],
+                            "Nomprojecte": fila["Nomprojecte"],
+                            "asignatura": fila["asignatura"],
+                            "contenido": fila.get("contingut", "No especificado")
+                        })
         
-
-
-    return render_template("notes.html")
+        return render_template("mostraprojectes.html", datos=datos)
+    
+    return render_template("mostraprojectes.html")    
 
 @app.route("/home")
 def home():
