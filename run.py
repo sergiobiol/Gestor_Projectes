@@ -88,7 +88,7 @@ def blockSignup():
 
 
 @app.route("/mostraprojectes", methods=["GET", "POST"])
-def notes():
+def mostraprojectes():
     if request.method == "POST":
         usuario = session.get("usuario")
         Nomprojecte = session.get("Nomprojecte")
@@ -100,7 +100,7 @@ def notes():
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)
             for fila in lectura:
-                if (fila["asignatura"].strip().lower() == buscasignatura.strip().lower() and
+                if (fila["asignatura"].strip().lower() == buscasignatura.strip().lower() or
                 fila["usuario"].strip().lower() == buscusuari.strip().lower()):
                     datos.append({
                             "usuario": fila["usuario"],

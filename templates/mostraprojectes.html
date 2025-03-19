@@ -12,6 +12,18 @@
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
+        <!--<label>Buscar Usuario:</label>
+        <input type="text" name="buscusuari">
+        <br></br>-->
+        <label for="opciones">Asignatura:</label>
+        <select id="opciones" name="buscasignatura">
+            <option value="Catala">Catala</option>
+            <option value="Castella">Castella</option>
+            <option value="Angles">Angles</option>
+            <option value="Balatro">Balatro</option>
+        </select>
+        <br></br>
+        <button type="submit">Ingresar</button>
         <table>
             <tr>
                 <th>Usuario</th>
