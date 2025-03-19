@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from functools import wraps
+
 import csv
 import os
 
@@ -31,7 +33,13 @@ def login():
 
     return render_template("login.html")  # Muestra el formulario de login
 
-
+def admin_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'usuario' not in session or session.get('rol') != 'admin':
+            return render_template("403.html"), 403
+        return f(*args, **kwargs)
+    return wrap
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -72,19 +80,15 @@ def signup():
     return render_template("signup.html")
 
 
-@app.route('/signup')
-def blockSignup():
-    if "usuario" not in session or session.get("rol") != "admin":
-        return render_template("403.html"), 403  # Acceso denegado
-    return render_template('signup.html')
+@app.route('/notes')
+@admin_required
+def blockNotes():
+    return render_template('notes.html')
 
-'''def verificar_credenciales(usuario, contraseña):
-    with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
-        lector = csv.DictReader(archivo)
-        for fila in lector:
-            if fila["usuario"] == usuario and fila["contraseña"] == contraseña:
-                return "admin" if fila["admin"] == "1" else "user"  # Devuelve el rol del usuario
-    return False  # Si no coincide ninguna credencial'''
+@app.route('/signup')
+@admin_required
+def blockSignup():
+    return render_template('signup.html')
 
 
 @app.route("/mostraprojectes", methods=["GET", "POST"])
@@ -94,14 +98,13 @@ def mostraprojectes():
         Nomprojecte = session.get("Nomprojecte")
         asignatura = session.get("asignatura")
         contingut = session.get("contingut")
-        buscusuari = request.form.get("buscusuari")
+        #buscusuari = request.form.get("buscusuari") or fila["usuario"].strip().lower() == buscusuari.strip().lower())
         buscasignatura = request.form.get("buscasignatura")
         datos = []
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)
             for fila in lectura:
-                if (fila["asignatura"].strip().lower() == buscasignatura.strip().lower() or
-                fila["usuario"].strip().lower() == buscusuari.strip().lower()):
+                if fila["asignatura"].strip().lower() == buscasignatura.strip().lower():
                     datos.append({
                             "usuario": fila["usuario"],
                             "Nomprojecte": fila["Nomprojecte"],
@@ -135,7 +138,7 @@ def projectes():
         Nomprojecte = request.form["Nomprojecte"]
         contingut = request.form["contingut"]
         asignatura = request.form["asignatura"]
-
+        notes = "Per evaluar"
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
@@ -144,7 +147,7 @@ def projectes():
                 
         with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
             escritor = csv.writer(archivo)
-            escritor.writerow([Nomprojecte,contingut,usuario,asignatura])
+            escritor.writerow([Nomprojecte,contingut,usuario,asignatura,notes])
 
             return render_template("projectes.html", mensaje="Creado")
     return render_template("projectes.html")

@@ -1,6 +1,9 @@
-Nomprojecte,contingut,usuario,asignatura
-moreno,moreno,moreno,moreno
-1,1,edu,Catala
-2,2,moreno,Castella
-3,3,quinto,Balatro
-4,4,admin,Angles
+Nomprojecte,contingut,usuario,asignatura,notes
+moreno,moreno,moreno,moreno,1
+1,1,edu,Catala,2
+2,2,moreno,Castella,3
+3,3,quinto,Balatro,4
+4,4,admin,Angles,5
+lele,lele,admin,Balatro,Per evaluar
+
+lala,lele,admin,Balatro,Per evaluar

@@ -1,5 +1,12 @@
+@font-face{
+    font-family: 'Questrial-Regular';
+    src:url(/fonts/Questrial-Regular.ttf);
+    font-weight: bold;
+    font-style: bold;
+}
+
 body {
-    font-family: Candara , ;
+    font-family: 'Questrial-Regular';
     text-align: center;
     margin-top: 50px;
     background-color: black;
