@@ -32,7 +32,7 @@ def login():
             return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
 
     return render_template("login.html")  # Muestra el formulario de login
-
+'''
 def admin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -40,17 +40,13 @@ def admin_required(f):
             return render_template("403.html"), 403
         return f(*args, **kwargs)
     return wrap
-
+'''
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
         usuario = request.form["usuario"]
         contraseña = request.form["contraseña"]
-        admin = request.form["admin"]
-        comprobar=session["admin"]
-        if comprobar== "0":
-            return redirect(url_for("home"))
-        
+        admin = request.form["admin"]        
         archivo_existe = os.path.exists("usuarios.csv")
         
         with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
@@ -79,42 +75,75 @@ def signup():
         
     return render_template("signup.html")
 
+'''@app.route('/projectes')
+@admin_required
+def blockProj():
+    return render_template('projectes.html')'''
 
-@app.route('/notes')
+'''@app.route('/notes')
 @admin_required
 def blockNotes():
     return render_template('notes.html')
 
-@app.route('/signup')
+@app.route('/homeadmin')
 @admin_required
 def blockSignup():
-    return render_template('signup.html')
+    return render_template('homeadmin.html')'''
 
 
 @app.route("/mostraprojectes", methods=["GET", "POST"])
 def mostraprojectes():
     if request.method == "POST":
+        # Verificar si el usuario es admin (comprobamos si admin es True)
         usuario = session.get("usuario")
-        Nomprojecte = session.get("Nomprojecte")
-        asignatura = session.get("asignatura")
-        contingut = session.get("contingut")
-        #buscusuari = request.form.get("buscusuari") or fila["usuario"].strip().lower() == buscusuari.strip().lower())
+        admin = session.get("admin")  # Asumimos que "admin" está almacenado como True/False en la sesión
+
+        # Convertir `admin` a 1 si es True (y 0 si es False)
+        if admin:
+            admin = 1
+        else:
+            admin = 0
+
+        # Obtener datos del formulario
         buscasignatura = request.form.get("buscasignatura")
+        nota = request.form.get("nota")  # Campo de texto donde el admin puede poner la nota
+        usuario_proyecto = request.form.get("usuario_proyecto")  # Usuario del proyecto al que agregar la nota
+
+        # Si es admin, agregar la nota al proyecto correspondiente
+        if admin == 1:  # Si el usuario es admin, podemos agregar la nota
+            # Abrir el archivo CSV y actualizar la información
+            proyectos_actualizados = []
+            with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+                lectura = csv.DictReader(archivo)
+                for fila in lectura:
+                    if fila["usuario"] == usuario_proyecto:
+                        fila["nota"] = nota  # Agregar la nota al proyecto
+                    proyectos_actualizados.append(fila)
+
+            # Guardar los proyectos con las nuevas notas en el archivo
+            with open("projectes.csv", mode="w", encoding="utf-8", newline="") as archivo:
+                fieldnames = ["usuario", "Nomprojecte", "asignatura", "contingut", "nota"]
+                writer = csv.DictWriter(archivo, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(proyectos_actualizados)
+
+        # Filtrar proyectos por asignatura
         datos = []
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)
             for fila in lectura:
                 if fila["asignatura"].strip().lower() == buscasignatura.strip().lower():
                     datos.append({
-                            "usuario": fila["usuario"],
-                            "Nomprojecte": fila["Nomprojecte"],
-                            "asignatura": fila["asignatura"],
-                            "contenido": fila.get("contingut", "No especificado")
-                        })
-        
+                        "usuario": fila["usuario"],
+                        "Nomprojecte": fila["Nomprojecte"],
+                        "asignatura": fila["asignatura"],
+                        "contenido": fila.get("contingut", "No especificado"),
+                        "nota": fila.get("nota", "No asignada")  # Mostrar la nota si existe
+                    })
+
         return render_template("mostraprojectes.html", datos=datos)
-    
-    return render_template("mostraprojectes.html")    
+
+    return render_template("mostraprojectes.html") 
 
 @app.route("/home")
 def home():
@@ -124,6 +153,8 @@ def home():
 
 @app.route("/homeadmin")
 def homeadmin():
+    print(f"Valor de admin: {session.get('admin')}")
+
     return render_template("homeadmin.html", usuario=session["usuario"])
 
 @app.route("/logout")

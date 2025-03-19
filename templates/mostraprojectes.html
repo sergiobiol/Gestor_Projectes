@@ -24,21 +24,51 @@
         </select>
         <br></br>
         <button type="submit">Ingresar</button>
-        <table>
-            <tr>
-                <th>Usuario</th>
-                <th>Proyecto</th>
-                <th>Asignatura</th>
-                <th>Contenido</th>
-            </tr>
-            {% for fila in datos %}
-            <tr>
-                <td>{{ fila.usuario }}</td>
-                <td>{{ fila.Nomprojecte }}</td>
-                <td>{{ fila.asignatura }}</td>
-                <td>{{ fila.contenido }}</td>
-            </tr>
-            {% endfor %}
+
+        </table>
+        <h1>Proyectos</h1>
+
+        {% if session["admin"] == 1 %}
+        <h2>Agregar nota a un proyecto</h2>
+        <form method="POST">
+            <label for="usuario_proyecto">Usuario del proyecto:</label>
+            <input type="text" id="usuario_proyecto" name="usuario_proyecto" required><br><br>
+            
+            <label for="nota">Nota:</label>
+            <textarea id="nota" name="nota" rows="4" cols="50" required></textarea><br><br>
+            
+            <input type="submit" value="Agregar Nota">
+        </form>
+        {% endif %}
+    
+        <h2>Lista de Proyectos</h2>
+        <form method="POST">
+            <label for="buscasignatura">Buscar por Asignatura:</label>
+            <input type="text" id="buscasignatura" name="buscasignatura" required>
+            <input type="submit" value="Buscar">
+        </form>
+    
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre del Proyecto</th>
+                    <th>Asignatura</th>
+                    <th>Contenido</th>
+                    <th>Nota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proyecto in datos %}
+                <tr>
+                    <td>{{ proyecto.usuario }}</td>
+                    <td>{{ proyecto.Nomprojecte }}</td>
+                    <td>{{ proyecto.asignatura }}</td>
+                    <td>{{ proyecto.contenido }}</td>
+                    <td>{{ proyecto.nota }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </form>
 </body>

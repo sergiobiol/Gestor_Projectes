@@ -1,16 +1,8 @@
-@font-face{
-    font-family: 'Questrial-Regular';
-    src:url(/fonts/Questrial-Regular.ttf);
-    font-weight: bold;
-    font-style: bold;
-}
-
 body {
-    font-family: 'Questrial-Regular';
-    text-align: center;
+    font-family: sans-serif;
     margin-top: 50px;
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
 }
 input {
     margin: 10px;
@@ -19,13 +11,26 @@ input {
     color: black;
     background-image: linear-gradient(#1b97ff, #69baff);
     margin: 15%;
+    margin-left: 25%;
+    margin-right: 25%;
     border-radius: 30px;
     border-right: 1rem solid #265d8c;
 }
 .form, h2{
     padding: 2%;
     font-size: 50px;
+    text-align: center;
 }
 .form, label{
     font-size: 20px;
+}
+.form, input{
+    margin-right: 25%;
+    width: ;
+    font-size: 1rem;
+    text-align: right;
+}
+.form, button{
+    size: 10px;
+    align-items: center;
 }
