@@ -90,6 +90,7 @@ def logout():
     session.pop("usuario", None)  # Eliminar sesión
     return redirect(url_for("login"))
 
+
 @app.route("/projectes", methods=["GET", "POST"])
 def projectes():
     if request.method == "POST":
@@ -100,14 +101,14 @@ def projectes():
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
-                if fila["Nomprojecte"] == Nomprojecte:
+                if fila["usuario"] == usuario and fila["Nomprojecte"] == Nomprojecte:
                     return render_template("projectes.html", mensaje="El projecte ja ha sigut creat")
-                else:
-                    with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
-                        escritor = csv.writer(archivo)
-                        escritor.writerow([usuario,Nomprojecte,contingut])
+                
+        with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
+            escritor = csv.writer(archivo)
+            escritor.writerow([Nomprojecte,contingut,usuario])
 
-                    return render_template("projectes.html", mensaje="Creado")
+            return render_template("projectes.html", mensaje="Creado")
     return render_template("projectes.html")
 
 
