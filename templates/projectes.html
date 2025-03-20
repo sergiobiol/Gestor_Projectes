@@ -26,17 +26,15 @@
         <br></br>
         <label for="opciones">Asignatura:</label>
         <select id="opciones" name="asignatura">
-            <option value="Catala">Catala</option>
-            <option value="Castella">Castella</option>
-            <option value="Angles">Angles</option>
-            <option value="Balatro">Balatro</option>
+            <option value="Helvetica">Helvetica</option>
+            <option value="Times-Roman">Times-Roman</option>
+            <option value="Courier">Courier</option>
         </select>
-
-    
         <br></br>
         <button type="submit">Ingresar</button>
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('homeadmin') }}">Home</a>
+        <a href="{{ url_for('convertir') }}">Convertir a pdf</a>
     </form>
-</body>
+    </body>
 </html>

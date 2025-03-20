@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Convertir</h2>
+    {% if mensaje %}
+        <p style="color: red;">{{ mensaje }}</p>
+    {% endif %}
+    <form method="POST">
+        <label>Tipus de lletra:</label>
+        <select id="opciones" name="lletra">
+            <option value="Catala">Catala</option>
+            <option value="Castella">Castella</option>
+            <option value="Angles">Angles</option>
+            <option value="Balatro">Balatro</option>
+        </select>
+        <br></br>
+        <label>Mida de la lletra:</label>
+        <input type="text" name="mida" required>   
+        <br></br>
+        <button type="submit">Ingresar</button>
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('convertir') }}">Convertir a PDF</a>
+        <a href="{{ url_for('homeadmin') }}">Home</a>
+    </form>
+</body>
+</html>

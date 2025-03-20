@@ -120,6 +120,16 @@ def blockNotes():
 def blockSignup():
     return render_template('homeadmin.html')'''
 
+@app.route("/convertir", methods=["GET", "POST"])
+def convertir():
+    if request.method == "POST":
+        lletra = request.form["lletra"]
+        mida = request.form ["mida"]
+        
+    return render_template("convertirapdf.html")
+
+
+
 @app.route("/cambiarcontra", methods=["GET", "POST"])
 def cambiarcontra():
     segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
