@@ -210,20 +210,65 @@ def mostraprojectes():
                     })       
     return render_template("mostraprojectes.html", datos=datos)
 
+
+class Usuari:
+    def __init__(self, usuario, nom, cognom, edat, telefon):
+        self.usuario = usuario
+        self.nom = nom
+        self.cognom = cognom
+        self.edat = edat
+        self.telefon = telefon
+
+    def to_dict(self):
+        return {
+            "usuario": self.usuario,
+            "nom": self.nom,
+            "cognom": self.cognom,
+            "edat": self.edat,
+            "telefon": self.telefon,
+            "rol": self.__class__.__name__.lower()
+        }
+
+class Professor(Usuari):
+    def __init__(self, usuario, nom, cognom, edat, telefon, placa_fixa):
+        super().__init__(usuario, nom, cognom, edat, telefon)
+        self.placa_fixa = placa_fixa
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["placa_fixa"] = self.placa_fixa
+        return data
+
+class Alumne(Usuari):
+    def __init__(self, usuario, nom, cognom, edat, telefon, identificador_alumne):
+        super().__init__(usuario, nom, cognom, edat, telefon)
+        self.identificador_alumne = identificador_alumne
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["identificador_alumne"] = self.identificador_alumne
+        return data
+
 @app.route("/afegir_dades_personals", methods=["GET", "POST"])
-#@admin_required
 def afegir_dades_personals():
     if request.method == "POST":
         usuario = request.form["usuario"]
-        rol = request.form["rol"]  # "professor" o "alumne"
+        rol = request.form["rol"]
         nom = request.form["nom"]
         cognom = request.form["cognom"]
         edat = request.form["edat"]
         telefon = request.form["telefon"]
-        placa_fixa = request.form.get("placa_fixa", "") if rol == "professor" else ""
-        identificador_alumne = request.form.get("identificador_alumne", "") if rol == "alumne" else ""
-
-        # Comprovar si ja existeixen dades personals d'aquest usuari
+        
+        if rol == "professor":
+            placa_fixa = request.form.get("placa_fixa", "")
+            nou_usuari = Professor(usuario, nom, cognom, edat, telefon, placa_fixa)
+        elif rol == "alumne":
+            identificador_alumne = request.form.get("identificador_alumne", "")
+            nou_usuari = Alumne(usuario, nom, cognom, edat, telefon, identificador_alumne)
+        else:
+            return render_template("dades_personals.html", missatge="Rol invàlid")
+        
+        # Comprovar si l'usuari ja existeix i actualitzar-lo
         existeix = False
         dades_actualitzades = []
         if os.path.exists("dades_personals.csv"):
@@ -232,49 +277,39 @@ def afegir_dades_personals():
                 for fila in lector:
                     if fila["usuario"] == usuario:
                         existeix = True
-                        fila.update({
-                            "rol": rol,
-                            "nom": nom,
-                            "cognom": cognom,
-                            "edat": edat,
-                            "telefon": telefon,
-                            "placa_fixa": placa_fixa,
-                            "identificador_alumne": identificador_alumne
-                        })
+                        fila.update(nou_usuari.to_dict())
                     dades_actualitzades.append(fila)
-
-        if existeix:
-            # Actualitzar dades
-            with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as fitxer:
-                fieldnames = ["usuario", "rol", "nom", "cognom", "edat", "telefon", "placa_fixa", "identificador_alumne"]
-                writer = csv.DictWriter(fitxer, fieldnames=fieldnames)
+        
+        with open("dades_personals.csv", mode="w" if existeix else "a", newline="", encoding="utf-8") as fitxer:
+            fieldnames = ["usuario", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"]
+            writer = csv.DictWriter(fitxer, fieldnames=fieldnames)
+            if fitxer.tell() == 0:
                 writer.writeheader()
+            if existeix:
                 writer.writerows(dades_actualitzades)
-            missatge = "Dades personals actualitzades correctament."
-        else:
-            # Afegir nova entrada
-            with open("dades_personals.csv", mode="a", newline="", encoding="utf-8") as fitxer:
-                fieldnames = ["usuario", "rol", "nom", "cognom", "edat", "telefon", "placa_fixa", "identificador_alumne"]
-                writer = csv.DictWriter(fitxer, fieldnames=fieldnames)
-                if fitxer.tell() == 0:
-                    writer.writeheader()
-                writer.writerow({
-                    "usuario": usuario,
-                    "rol": rol,
-                    "nom": nom,
-                    "cognom": cognom,
-                    "edat": edat,
-                    "telefon": telefon,
-                    "placa_fixa": placa_fixa,
-                    "identificador_alumne": identificador_alumne
-                })
-            missatge = "Dades personals afegides correctament."
-
+                missatge = "Dades personals actualitzades correctament."
+            else:
+                writer.writerow(nou_usuari.to_dict())
+                missatge = "Dades personals afegides correctament."
+        
         return render_template("dades_personals.html", missatge=missatge)
-
+    
     return render_template("dades_personals.html")
 
+#PER VEURE DADES - VEURE COM IMPLEMENTAR
+'''
+@app.route("/veure_dades_personals")
+@admin_required
+def veure_dades_personals():
+    dades = []
+    if os.path.exists("dades_personals.csv"):
+        with open("dades_personals.csv", mode="r", encoding="utf-8") as fitxer:
+            lector = csv.DictReader(fitxer)
+            for fila in lector:
+                dades.append(fila)
+    return render_template("llista_dades.html", dades=dades)
 
+'''
 
 
 @app.route("/home")
