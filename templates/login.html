@@ -7,21 +7,28 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="form">
-        <h2>Iniciar Sesión</h2>
-    {% if mensaje %}
-        <p style="color: red;">{{ mensaje }}</p>
-    {% endif %}
-    <form method="POST">
-        <label>Usuario:<i class="fa-solid fa-house"></i></label>
-        <input type="text" name="usuario" required>
-        <br>
-        <label>Contraseña:</label>
-        <input type="password" name="contraseña" required>
-        <br>
-        <button type="submit">Ingresar</button>
-        <a href="{{ url_for('cambiarcontra') }}">Olvidaste la contraseña?</a>
-    </form>
-    </div>
+    <header>
+        <h1>Institu Montsià</h1>
+    </header>
+    <main>
+        <div>
+            <h2>Iniciar Sesión</h2>
+        {% if mensaje %}
+            <p style="color: red;">{{ mensaje }}</p>
+        {% endif %}
+        <form method="POST">
+            <img src="/static/icons/usuario.png" alt="usuario">
+            <input type="text" name="usuario" required>
+            <br>
+            <img src="/static/icons/llave.png" alt="usuario">
+            <input type="password" name="contraseña" required>
+            <br>
+            <button type="submit">Ingresar</button>
+        </form>
+        </div>
+    </main>
+    <footer>
+
+    </footer>
 </body>
 </html>

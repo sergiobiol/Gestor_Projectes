@@ -12,6 +12,12 @@
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
+        {% if session["admin"] == "1"%}
+        <h2>Zona Administrativa</h2>
+        <p>Esta sección solo es visible para administradores.</p>
+        {% else %}
+        <p>No tienes acceso a esta sección.</p>
+        {% endif %}
         <label>Nom nou projecte:</label>
         <input type="text" name="Nomprojecte" required>
         <br></br>
