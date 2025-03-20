@@ -1,0 +1,32 @@
+<form method="POST">
+    Usuari: <input type="text" name="usuario" required><br>
+    Rol:
+    <select name="rol" required onchange="toggleFields(this.value)">
+        <option value="professor">Professor</option>
+        <option value="alumne">Alumne</option>
+    </select><br>
+    Nom: <input type="text" name="nom" required><br>
+    Cognom: <input type="text" name="cognom" required><br>
+    Edat: <input type="number" name="edat" required><br>
+    Telèfon: <input type="text" name="telefon" required><br>
+
+    <div id="professor_fields" style="display:none;">
+        Plaça fixa (Sí/No): <input type="text" name="placa_fixa"><br>
+    </div>
+    <div id="alumne_fields" style="display:none;">
+        Identificador alumne: <input type="text" name="identificador_alumne"><br>
+    </div>
+
+    <input type="submit" value="Guardar Dades">
+</form>
+
+<script>
+function toggleFields(rol) {
+    document.getElementById('professor_fields').style.display = rol === 'professor' ? 'block' : 'none';
+    document.getElementById('alumne_fields').style.display = rol === 'alumne' ? 'block' : 'none';
+}
+</script>
+
+{% if missatge %}
+<p>{{ missatge }}</p>
+{% endif %}

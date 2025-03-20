@@ -209,7 +209,73 @@ def mostraprojectes():
                         "notes": fila.get("notes", "No asignada")  # Mostrar la nota si existe
                     })       
     return render_template("mostraprojectes.html", datos=datos)
-    
+
+@app.route("/afegir_dades_personals", methods=["GET", "POST"])
+#@admin_required
+def afegir_dades_personals():
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        rol = request.form["rol"]  # "professor" o "alumne"
+        nom = request.form["nom"]
+        cognom = request.form["cognom"]
+        edat = request.form["edat"]
+        telefon = request.form["telefon"]
+        placa_fixa = request.form.get("placa_fixa", "") if rol == "professor" else ""
+        identificador_alumne = request.form.get("identificador_alumne", "") if rol == "alumne" else ""
+
+        # Comprovar si ja existeixen dades personals d'aquest usuari
+        existeix = False
+        dades_actualitzades = []
+        if os.path.exists("dades_personals.csv"):
+            with open("dades_personals.csv", mode="r", encoding="utf-8") as fitxer:
+                lector = csv.DictReader(fitxer)
+                for fila in lector:
+                    if fila["usuario"] == usuario:
+                        existeix = True
+                        fila.update({
+                            "rol": rol,
+                            "nom": nom,
+                            "cognom": cognom,
+                            "edat": edat,
+                            "telefon": telefon,
+                            "placa_fixa": placa_fixa,
+                            "identificador_alumne": identificador_alumne
+                        })
+                    dades_actualitzades.append(fila)
+
+        if existeix:
+            # Actualitzar dades
+            with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as fitxer:
+                fieldnames = ["usuario", "rol", "nom", "cognom", "edat", "telefon", "placa_fixa", "identificador_alumne"]
+                writer = csv.DictWriter(fitxer, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(dades_actualitzades)
+            missatge = "Dades personals actualitzades correctament."
+        else:
+            # Afegir nova entrada
+            with open("dades_personals.csv", mode="a", newline="", encoding="utf-8") as fitxer:
+                fieldnames = ["usuario", "rol", "nom", "cognom", "edat", "telefon", "placa_fixa", "identificador_alumne"]
+                writer = csv.DictWriter(fitxer, fieldnames=fieldnames)
+                if fitxer.tell() == 0:
+                    writer.writeheader()
+                writer.writerow({
+                    "usuario": usuario,
+                    "rol": rol,
+                    "nom": nom,
+                    "cognom": cognom,
+                    "edat": edat,
+                    "telefon": telefon,
+                    "placa_fixa": placa_fixa,
+                    "identificador_alumne": identificador_alumne
+                })
+            missatge = "Dades personals afegides correctament."
+
+        return render_template("dades_personals.html", missatge=missatge)
+
+    return render_template("dades_personals.html")
+
+
+
 
 @app.route("/home")
 def home():
