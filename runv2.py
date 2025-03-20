@@ -53,7 +53,7 @@ def llegir_usuaris():
             for fila in lector:
                 usuaris[fila["usuario"]] = fila
     return usuaris
-
+#
 def es_professor():
     usuario = session.get("usuario")
     usuaris = llegir_usuaris()
