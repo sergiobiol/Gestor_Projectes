@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from functools import wraps
-
+import re
 import csv
 import os
 
@@ -15,7 +15,7 @@ def verificar_credenciales(usuario, contraseña):
             if fila["usuario"] == usuario and fila["contraseña"] == contraseña:
                 return "admin" if fila["admin"] == "1" else "user"  # Devuelve el rol del usuario
     return False  # Si no coincide ninguna credencial
-
+'''
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -31,8 +31,30 @@ def login():
         else:
             return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
 
-    return render_template("login.html")  # Muestra el formulario de login
-'''
+    return render_template("login.html")  # Muestra el formulario de login'''
+
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        contraseña = request.form["contraseña"]
+
+        rol = verificar_credenciales(usuario, contraseña)  # Esta función debe devolver el rol del usuario
+
+        if rol:  # Si rol es válido (por ejemplo, "admin" o "usuario")
+            session["usuario"] = usuario  # Guarda el nombre de usuario en la sesión
+            session["rol"] = rol  # Guarda el rol del usuario en la sesión (admin o usuario normal)
+
+            # Si el rol es admin, redirige a la página del admin, si no, a la página normal
+            if rol == "admin":
+                return render_template("homeadmin.html", usuario=session["usuario"])
+            else:
+                return render_template("home.html", usuario=session["usuario"])
+        else:
+            return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
+
+    return render_template("login.html")
+
 def admin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -40,13 +62,20 @@ def admin_required(f):
             return render_template("403.html"), 403
         return f(*args, **kwargs)
     return wrap
-'''
+
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
+        segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        ara = session["usuario"]
         usuario = request.form["usuario"]
         contraseña = request.form["contraseña"]
         admin = request.form["admin"]        
+        #Usem un a expresio regular per a asegurarnos que la contraseña sigui segura
+        if not re.match(segura, contraseña):
+            return render_template("signup.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.")
+
         archivo_existe = os.path.exists("usuarios.csv")
         
         with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
@@ -64,23 +93,24 @@ def signup():
             if not archivo_existe:
                 escritor.writerow(["usuario", "contraseña"])
             
-            # Escribir el nuevo usuario
+            # Escribir el nuevo usuario amb el nom de usuari, la contraseña, si es admin(1) o no (0) i el usuari que l'ha creat
             if admin == "1":
-                escritor.writerow([usuario, contraseña, 1])
+                escritor.writerow([usuario, contraseña, 1,ara])
             else:
-                escritor.writerow([usuario, contraseña, 0])
+                escritor.writerow([usuario, contraseña, 0,ara])
 
         # Redirigir al login después de registrar el usuario
-        return redirect(url_for("login"))
+        return redirect(url_for("homeadmin"))
         
     return render_template("signup.html")
+
 
 '''@app.route('/projectes')
 @admin_required
 def blockProj():
-    return render_template('projectes.html')'''
+    return render_template('projectes.html')
 
-'''@app.route('/notes')
+@app.route('/notes')
 @admin_required
 def blockNotes():
     return render_template('notes.html')
@@ -90,45 +120,73 @@ def blockNotes():
 def blockSignup():
     return render_template('homeadmin.html')'''
 
+@app.route("/cambiarcontra", methods=["GET", "POST"])
+def cambiarcontra():
+    segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+    if request.method == "POST":
+        usuari = request.form["usuari"]
+        nova = request.form["nova"]
+        confirmar = request.form["confirmar"]
+        nou = []
+        trobat = False
+        if nova != confirmar:
+            return render_template("cambiarcontra.html", mensaje="Las contraseñas no coinciden.")
+
+        # Validar si la nueva contraseña es segura
+        if not re.match(segura, nova):
+            return render_template("cambiarcontra.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.")
+
+         
+        with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)    
+            for fila in lectura:
+                if fila["usuario"] == usuari:
+                    fila["contraseña"] = nova  # Agregar la nota al proyecto
+                    trobat = True
+                nou.append(fila)
+
+        if not trobat:
+            return render_template("cambiarcontra.html", mensaje="Usuario no encontrado.")
+        
+        with open("usuarios.csv", mode="w", newline="", encoding="utf-8") as archivo:
+            fieldnames  = ["usuario" , "contraseña" , "admin" , "creat per"]
+            writer = csv.DictWriter(archivo, fieldnames=fieldnames )
+            writer.writeheader()
+            writer.writerows(nou)
+        return render_template("cambiarcontra.html", mensaje="Contraseña cambiada exitosamente.")
+    return render_template("cambiarcontra.html")
+
+@app.route("/notes", methods=["GET", "POST"])
+def notes():
+    if request.method == "POST":
+        nota = request.form["nota"]  # Campo de texto donde el admin puede poner la nota
+        usuario=request.form["usuario"]  # Usuario del proyecto al que agregar la nota
+        asignatura = request.form["buscasignatura"]
+        proyectos_actualizados = []
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)
+           
+            for fila in lectura:
+                if fila["usuario"] == usuario and fila["asignatura"] == asignatura:
+                    fila["notes"] = nota  # Agregar la nota al proyecto
+                proyectos_actualizados.append(fila)
+        # Guardar los proyectos con las nuevas notas en el archivo
+        with open("projectes.csv", mode="w", encoding="utf-8", newline="") as archivo:
+            fieldnames = ["Nomprojecte", "contingut" , "usuario", "asignatura" , "notes"]
+            writer = csv.DictWriter(archivo, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(proyectos_actualizados)
+    return render_template("notes.html") 
+
+
 
 @app.route("/mostraprojectes", methods=["GET", "POST"])
 def mostraprojectes():
+    datos = []
     if request.method == "POST":
-        # Verificar si el usuario es admin (comprobamos si admin es True)
-        usuario = session.get("usuario")
-        admin = session.get("admin")  # Asumimos que "admin" está almacenado como True/False en la sesión
-
-        # Convertir `admin` a 1 si es True (y 0 si es False)
-        if admin:
-            admin = 1
-        else:
-            admin = 0
-
-        # Obtener datos del formulario
         buscasignatura = request.form.get("buscasignatura")
-        nota = request.form.get("nota")  # Campo de texto donde el admin puede poner la nota
-        usuario_proyecto = request.form.get("usuario_proyecto")  # Usuario del proyecto al que agregar la nota
-
-        # Si es admin, agregar la nota al proyecto correspondiente
-        if admin == 1:  # Si el usuario es admin, podemos agregar la nota
-            # Abrir el archivo CSV y actualizar la información
-            proyectos_actualizados = []
-            with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
-                lectura = csv.DictReader(archivo)
-                for fila in lectura:
-                    if fila["usuario"] == usuario_proyecto:
-                        fila["nota"] = nota  # Agregar la nota al proyecto
-                    proyectos_actualizados.append(fila)
-
-            # Guardar los proyectos con las nuevas notas en el archivo
-            with open("projectes.csv", mode="w", encoding="utf-8", newline="") as archivo:
-                fieldnames = ["usuario", "Nomprojecte", "asignatura", "contingut", "nota"]
-                writer = csv.DictWriter(archivo, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(proyectos_actualizados)
-
         # Filtrar proyectos por asignatura
-        datos = []
+        
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)
             for fila in lectura:
@@ -138,12 +196,10 @@ def mostraprojectes():
                         "Nomprojecte": fila["Nomprojecte"],
                         "asignatura": fila["asignatura"],
                         "contenido": fila.get("contingut", "No especificado"),
-                        "nota": fila.get("nota", "No asignada")  # Mostrar la nota si existe
-                    })
-
-        return render_template("mostraprojectes.html", datos=datos)
-
-    return render_template("mostraprojectes.html") 
+                        "notes": fila.get("notes", "No asignada")  # Mostrar la nota si existe
+                    })       
+    return render_template("mostraprojectes.html", datos=datos)
+    
 
 @app.route("/home")
 def home():
@@ -186,4 +242,4 @@ def projectes():
 
 #Start Program
 if __name__ == "__main__":
-    app.run(host="192.168.221.251" ,debug=True)
+    app.run(debug=True)

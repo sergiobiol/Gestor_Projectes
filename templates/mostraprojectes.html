@@ -1,51 +1,35 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projectes alumnes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h2>Projectes alumnes</h2>
-    {% if mensaje %}
-        <p style="color: red;">{{ mensaje }}</p>
-    {% endif %}
-    <form method="POST">
-        <!--<label>Buscar Usuario:</label>
-        <input type="text" name="buscusuari">
-        <br></br>-->
-        <label for="opciones">Asignatura:</label>
-        <select id="opciones" name="buscasignatura">
-            <option value="Catala">Catala</option>
-            <option value="Castella">Castella</option>
-            <option value="Angles">Angles</option>
-            <option value="Balatro">Balatro</option>
-        </select>
-        <br></br>
-        <button type="submit">Ingresar</button>
-
-        </table>
-        <h1>Proyectos</h1>
-
-        {% if session["admin"] == 1 %}
-        <h2>Agregar nota a un proyecto</h2>
-        <form method="POST">
-            <label for="usuario_proyecto">Usuario del proyecto:</label>
-            <input type="text" id="usuario_proyecto" name="usuario_proyecto" required><br><br>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Projectes alumnes</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
             
-            <label for="nota">Nota:</label>
-            <textarea id="nota" name="nota" rows="4" cols="50" required></textarea><br><br>
-            
-            <input type="submit" value="Agregar Nota">
-        </form>
+        {% if mensaje %}
+            <p style="color: red;">{{ mensaje }}</p>
         {% endif %}
-    
-        <h2>Lista de Proyectos</h2>
         <form method="POST">
+            <h2>Lista de Proyectos</h2>
+        <form method="POST">
+            <a href="{{ url_for('mostraprojectes') }}">buscar</a>
+            <a href="{{ url_for('notes') }}">Notes</a>   
+            <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+            <a href="{{ url_for('homeadmin') }}">Home</a> 
+            <br></br>
+
             <label for="buscasignatura">Buscar por Asignatura:</label>
-            <input type="text" id="buscasignatura" name="buscasignatura" required>
-            <input type="submit" value="Buscar">
+            <select id="opciones" name="buscasignatura">
+                <option value="Catala">Catala</option>
+                <option value="Castella">Castella</option>
+                <option value="Angles">Angles</option>
+                <option value="Balatro">Balatro</option>
+            </select>
+            <button type="submit">Ingresar</button>
+
         </form>
     
         <table border="1">
@@ -65,11 +49,12 @@
                     <td>{{ proyecto.Nomprojecte }}</td>
                     <td>{{ proyecto.asignatura }}</td>
                     <td>{{ proyecto.contenido }}</td>
-                    <td>{{ proyecto.nota }}</td>
+                    <td>{{ proyecto.notes }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
     </form>
 </body>
 </html>

@@ -1,7 +1,11 @@
-usuario,contraseña,admin
-admin,admin,1
-edu,edu,0
-moreno,moreno,1
-quinto,quinto,0
-user,user,0
-balatro,balatro,1
+usuario,contraseña,admin,creat per
+admin,admin,1,admin
+edu,edu,0,admin
+moreno,moreno,1,admin
+quinto,quinto,0,admin
+user,user,0,admin
+balatro,balatrez,1,admin
+balatrez,balatro,1,admin
+espadalastro,Hola1234!,0,admin
+espadalustro,Hola1234!,0,admin
+hola,Hola1234!,1,balatro
