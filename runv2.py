@@ -160,11 +160,13 @@ def afegir_dades_personals():
         if usuario != usuario_sessio:
             return render_template("dades_personals.html", missatge="No tens permís per modificar aquestes dades.")
         
+        rol = request.form["rol"]
         nom = request.form["nom"]
         cognom = request.form["cognom"]
         edat = request.form["edat"]
         telefon = request.form["telefon"]
-'''        if rol == "professor":
+        
+        if rol == "professor":
             placa_fixa = request.form.get("placa_fixa", "")
             nou_usuari = Professor(usuario, nom, cognom, edat, telefon, placa_fixa)
         elif rol == "alumne":
@@ -173,7 +175,7 @@ def afegir_dades_personals():
         else:
             return render_template("dades_personals.html", missatge="Rol invàlid")
         
-        usuaris[usuario] = nou_usuari.to_dict()'''
+        usuaris[usuario] = nou_usuari.to_dict()
         
         with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as fitxer:
             fieldnames = ["usuario", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"]
