@@ -64,7 +64,7 @@ def admin_required(f):
     return wrap
 
 
-@app.route("/signup", methods=["GET", "POST"])
+'''@app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
         segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
@@ -103,7 +103,7 @@ def signup():
         return redirect(url_for("homeadmin"))
         
     return render_template("signup.html")
-
+'''
 
 '''@app.route('/projectes')
 @admin_required
@@ -151,7 +151,7 @@ def cambiarcontra():
             lectura = csv.DictReader(archivo)    
             for fila in lectura:
                 if fila["usuario"] == usuari:
-                    fila["contraseña"] = nova  # Agregar la nota al proyecto
+                    fila["contraseña"] = nova  
                     trobat = True
                 nou.append(fila)
 
