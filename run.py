@@ -353,4 +353,5 @@ def projectes():
 
 #Start Program
 if __name__ == "__main__":
-    app.run(debug=True) #afegir host="ip"
+    app.run(host="192.168.221.200",debug=True) #afegir host="ip"
+

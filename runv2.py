@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, session, redirect, url_for
 from functools import wraps
 import csv
 import os
-
+import re
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta_segura"  # Necessari per gestionar sessions
@@ -53,11 +53,25 @@ def llegir_usuaris():
             for fila in lector:
                 usuaris[fila["usuario"]] = fila
     return usuaris
-#
+
+def verificar_credenciales(usuario, contraseña):
+    with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
+        lector = csv.DictReader(archivo)
+        for fila in lector:
+            if fila["usuario"] == usuario and fila["contraseña"] == contraseña:
+                return redirect(url_for("login"))  # Devuelve el rol del usuario
+    return False
+
 def es_professor():
-    usuario = session.get("usuario")
-    usuaris = llegir_usuaris()
-    return usuaris.get(usuario, {}).get("rol") == "professor"
+    usuario = session.get("usuario")  # Obtiene el usuario de la sesión
+    usuaris = llegir_usuaris()  # Lee los datos del CSV (asumimos que devuelve un diccionario)
+    
+    datos_usuario = usuaris.get(usuario, {})
+    
+    es_rol_professor = datos_usuario.get("rol") == "professor"
+    es_admin = datos_usuario.get("admin") == "1"  # Compara como string, ya que el CSV almacena "1" o "0"
+    
+    return es_rol_professor or es_admin
 
 def login_required(f):
     @wraps(f)  # Afegeix aquesta línia per evitar duplicacions
@@ -68,13 +82,37 @@ def login_required(f):
     return wrapped
 
 def professor_required(f):
-    @wraps(f)  # Afegeix aquesta línia per evitar duplicacions
+    @wraps(f)
     def wrapped(*args, **kwargs):
+        if not session.get("usuario"):  # Verifica si hay un usuario en la sesión
+            return redirect(url_for("login"))  # Redirige al login si no hay usuario
         if not es_professor():
             return redirect(url_for("error403"))
         return f(*args, **kwargs)
     return wrapped
 
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        contra = request.form["contraseña"]
+        confirmar = verificar_credenciales(usuario,contra)
+
+        if confirmar:
+            session["usuario"] = usuario  # Guarda el nombre de usuario en la sesión
+            session["confirmar"] = confirmar
+            if confirmar ==
+        return redirect(url_for("home"))
+    return render_template("home.html")
+
+@app.route("/logout")
+def logout():
+    session.pop("usuario", None)
+    return redirect(url_for("login"))
 
 @app.route("/403")
 def error403():
@@ -118,22 +156,6 @@ def afegir_dades_personals():
     
     return render_template("dades_personals.html")
 
-@app.route("/")
-def home():
-    return render_template("login.html")
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        session["usuario"] = request.form["usuario"]
-        return redirect(url_for("home"))
-    return render_template("login.html")
-
-@app.route("/logout")
-def logout():
-    session.pop("usuario", None)
-    return redirect(url_for("login"))
-
 @app.route("/gestionar_projectes")
 @login_required
 @professor_required
@@ -141,4 +163,4 @@ def gestionar_projectes():
     return render_template("gestionar_projectes.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="192.168.221.200", debug=True)
