@@ -205,9 +205,9 @@ def signup():
         if not re.match(segura, contraseña):
             return render_template("signup.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.")
 
-        archivo_existe = os.path.exists("usuarios.csv")
+        archivo_existe = os.path.exists("dades_personals.csv")
         
-        with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
+        with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
                 if fila["usuario"] == usuario:
@@ -215,7 +215,7 @@ def signup():
                 
         
         # Si el archivo no existe, se crea con encabezados
-        with open("usuarios.csv", mode="a", newline="", encoding="utf-8") as archivo:
+        with open("dades_personals.csv", mode="a", newline="", encoding="utf-8") as archivo:
             escritor = csv.writer(archivo)
             
             # Escribir los encabezados solo si el archivo no existe
@@ -256,7 +256,7 @@ def cambiarcontra():
             return render_template("cambiarcontra.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.")
 
          
-        with open("usuarios.csv", mode="r", encoding="utf-8") as archivo:
+        with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)    
             for fila in lectura:
                 if fila["usuario"] == usuari:
@@ -267,8 +267,8 @@ def cambiarcontra():
         if not trobat:
             return render_template("cambiarcontra.html", mensaje="Usuario no encontrado.")
         
-        with open("usuarios.csv", mode="w", newline="", encoding="utf-8") as archivo:
-            fieldnames  = ["usuario" , "contraseña" , "admin" , "creat per"]
+        with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as archivo:
+            fieldnames  = ["login", "usuario" , "contraseña" , "nom" , "cognom" , "edat" , "telefon", "rol" , "placa_fixa" , "identificador_alumne"]
             writer = csv.DictWriter(archivo, fieldnames=fieldnames )
             writer.writeheader()
             writer.writerows(nou)
