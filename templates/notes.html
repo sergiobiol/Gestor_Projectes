@@ -12,8 +12,14 @@
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
+        <label>Afegir nota:</label>
+        <input type="text" name="nota">
+        <br></br>
         <label>Buscar Usuario:</label>
         <input type="text" name="buscusuari">
+        <br></br>
+        <label>Buscar Titul del projecte:</label>
+        <input type="text" name="buscprojecte">
         <br></br>
         <label for="opciones">Asignatura:</label>
         <select id="opciones" name="buscasignatura">
@@ -24,6 +30,10 @@
         </select>
         <br></br>
         <button type="submit">Ingresar</button>
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('signup') }}">Registrar</a> 
+        <a href="{{ url_for('notes') }}">Modificar notes</a> 
+        <a href="{{ url_for('homeadmin') }}">Home</a> 
     </form>
 </body>
 </html>

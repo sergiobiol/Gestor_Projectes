@@ -96,9 +96,10 @@ def professor_required(f):
         return f(*args, **kwargs)
     return wrapped
 
-@app.route("/")
+'''@app.route("/")
 def home():
     return render_template("login.html")
+'''
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -107,8 +108,9 @@ def login():
         rol = verificar_credenciales(usuario, contra)
 
         if rol:
+            print(rol,"+++++++++++++++++++++")
             session["usuario"] = usuario  # Guarda el nombre de usuario en la sesión
-            session["rol"] = rol  # Guarda el rol en la sesión
+            session["rol"] = rol
 
             login_valido = False  # Variable para determinar si el login es válido
             # Leer archivo CSV solo una vez
@@ -128,12 +130,13 @@ def login():
                 else:
                     return render_template("home.html", usuario=session["usuario"])
             else:
+                print("pppppppppppppppppppppp")
                 # Si el login no es válido, redirigimos a dades_personals.html
                 return render_template("dades_personals.html", usuario=session["usuario"])
 
         else:
             print("+++++++++++++")
-            # Si las credenciales no son correctas
+            # Si las credenciales no son correctas  
             return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
 
     return render_template("login.html")
@@ -152,40 +155,45 @@ def error403():
 @app.route("/afegir_dades_personals", methods=["GET", "POST"])
 @login_required
 def afegir_dades_personals():
+    if "usuario" not in session:
+        return redirect(url_for('login'))  # Protección por si no hay usuario en sesión
+
     usuario_sessio = session["usuario"]
-    usuaris = llegir_usuaris()
-    
+    usuaris = llegir_usuaris()  # Debe devolver dict con clave 'usuario'
+
     if request.method == "POST":
-        usuario = request.form["usuario"]
-        if usuario != usuario_sessio:
-            return render_template("dades_personals.html", missatge="No tens permís per modificar aquestes dades.")
-        
-        rol = request.form["rol"]
-        nom = request.form["nom"]
-        cognom = request.form["cognom"]
-        edat = request.form["edat"]
-        telefon = request.form["telefon"]
-        
-        if rol == "professor":
-            placa_fixa = request.form.get("placa_fixa", "")
-            nou_usuari = Professor(usuario, nom, cognom, edat, telefon, placa_fixa)
-        elif rol == "alumne":
-            identificador_alumne = request.form.get("identificador_alumne", "")
-            nou_usuari = Alumne(usuario, nom, cognom, edat, telefon, identificador_alumne)
-        else:
-            return render_template("dades_personals.html", missatge="Rol invàlid")
-        
-        usuaris[usuario] = nou_usuari.to_dict()
-        
+        # Recoger los datos del formulario con manejo de errores
+        try:
+            nom = request.form["nom"]
+            cognom = request.form["cognom"]
+            edat = request.form["edat"]
+            telefon = request.form["telefon"]
+        except KeyError as e:
+            return render_template("dades_personals.html", missatge=f"Error: Falta el camp {e} al formulari.")
+
+        # Actualizar los campos editables
+        usuaris[usuario_sessio]["nom"] = nom
+        usuaris[usuario_sessio]["cognom"] = cognom
+        usuaris[usuario_sessio]["edat"] = edat
+        usuaris[usuario_sessio]["telefon"] = telefon
+
+        # Actualizar el campo login a 1 para indicar que ya se editaron los datos
+        usuaris[usuario_sessio]["login"] = "1"
+
+        # Guardar todos los campos en el archivo CSV
         with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as fitxer:
-            fieldnames = ["usuario", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"]
+            fieldnames = ["login", "usuario", "contraseña", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"]
             writer = csv.DictWriter(fitxer, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(usuaris.values())
-        
-        return render_template("dades_personals.html", missatge="Dades actualitzades correctament.")
-    
-    return render_template("dades_personals.html")
+
+        if usuario_sessio == "professor":
+            return render_template("homeadmin.html", usuario=session["usuario"])
+        else:
+            return render_template("home.html", usuario=session["usuario"])
+
+    return render_template()
+
 
 @app.route("/gestionar_projectes")
 @login_required
@@ -197,10 +205,9 @@ def gestionar_projectes():
 def signup():
     if request.method == "POST":
         segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-        ara = session["usuario"]
         usuario = request.form["usuario"]
         contraseña = request.form["contraseña"]
-        admin = request.form["admin"]        
+        professor = request.form["professor"]        
         #Usem un a expresio regular per a asegurarnos que la contraseña sigui segura
         if not re.match(segura, contraseña):
             return render_template("signup.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.")
@@ -223,10 +230,10 @@ def signup():
                 escritor.writerow(["usuario", "contraseña"])
             
             # Escribir el nuevo usuario amb el nom de usuari, la contraseña, si es admin(1) o no (0) i el usuari que l'ha creat
-            if admin == "1":
-                escritor.writerow([usuario, contraseña, 1,ara])
+            if professor == "1":
+                escritor.writerow([0,usuario, contraseña,0,0,0,0,"professor",0])
             else:
-                escritor.writerow([usuario, contraseña, 0,ara])
+                escritor.writerow([0,usuario, contraseña,0,0,0,0,"alumne",0])
 
         # Redirigir al login después de registrar el usuario
         return redirect(url_for("homeadmin"))
@@ -237,7 +244,7 @@ def signup():
 
 @app.route("/convertir", methods=["GET", "POST"])
 def convertir():
-    return render_template("login.html")
+    return render_template("convertirapdf.html")
 
 @app.route("/cambiarcontra", methods=["GET", "POST"])
 def cambiarcontra():
@@ -278,25 +285,80 @@ def cambiarcontra():
 
 @app.route("/notes", methods=["GET", "POST"])
 def notes():
-    return render_template("login.html")
+    if request.method == "POST":
+        nota = request.form["nota"]  
+        buscusuari=request.form["buscusuari"]  
+        buscprojecte= request.form["buscprojecte"]
+        asignatura = request.form["buscasignatura"]
+        proyectos_actualizados = []
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)
+           
+            for fila in lectura:
+                if fila["usuario"] == buscusuari and fila["asignatura"] == asignatura and fila["Nomprojecte"] == buscprojecte:
+                    fila["notes"] = nota  # Agregar la nota al proyecto
+                proyectos_actualizados.append(fila)
+        # Guardar los proyectos con las nuevas notas en el archivo
+        with open("projectes.csv", mode="w", encoding="utf-8", newline="") as archivo:
+            fieldnames = ["Nomprojecte", "contingut" , "usuario", "asignatura" , "notes"]
+            writer = csv.DictWriter(archivo, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(proyectos_actualizados)
+    return render_template("notes.html") 
 
 
 @app.route("/projectes", methods=["GET", "POST"])
 def projectes():
-    return render_template("login.html")
+    if request.method == "POST":
+        usuario=session["usuario"]
+        Nomprojecte = request.form["Nomprojecte"]
+        contingut = request.form["contingut"]
+        asignatura = request.form["asignatura"]
+        notes = "Per evaluar"
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lector = csv.DictReader(archivo)
+            for fila in lector:
+                if fila["usuario"] == usuario and fila["Nomprojecte"] == Nomprojecte and fila["asignatura"] == asignatura:
+                    return render_template("projectes.html", mensaje="El projecte ja ha sigut creat")
+                
+        with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
+            escritor = csv.writer(archivo)
+            escritor.writerow([Nomprojecte,contingut,usuario,asignatura,notes])
+            print("aaaaaaaaaaaa")
+            return render_template("projectes.html", mensaje="Creado")
+    return render_template("projectes.html")
 
 
 @app.route("/homeadmin", methods=["GET", "POST"])
 def homeadmin():
-    return render_template("login.html")
+    return render_template("homeadmin.html")
 
+@app.route("/home", methods=["GET", "POST"])
+def home():
+    return render_template("home.html")
 
 @app.route("/mostraprojectes", methods=["GET", "POST"])
 def mostraprojectes():
-    return render_template("login.html")
+    datos = []
+    if request.method == "POST":
+        buscasignatura = request.form.get("buscasignatura")
+        # Filtrar proyectos por asignatura
+        
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)
+            for fila in lectura:
+                if fila["asignatura"].strip().lower() == buscasignatura.strip().lower():
+                    datos.append({
+                        "usuario": fila["usuario"],
+                        "Nomprojecte": fila["Nomprojecte"],
+                        "asignatura": fila["asignatura"],
+                        "contenido": fila.get("contingut", "No especificado"),
+                        "notes": fila.get("notes", "No asignada")  # Mostrar la nota si existe
+                    })       
+    return render_template("mostraprojectes.html", datos=datos)
 
 
 
 
 if __name__ == "__main__":
-    app.run(host="192.168.221.200", debug=True)
+    app.run(host="192.168.221.246", debug=True)

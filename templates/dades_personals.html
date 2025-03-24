@@ -1,32 +1,19 @@
-<form method="POST">
-    Usuari: <input type="text" name="usuario" required><br>
-    Rol:
-    <select name="rol" required onchange="toggleFields(this.value)">
-        <option value="professor">Professor</option>
-        <option value="alumne">Alumne</option>
-    </select><br>
-    Nom: <input type="text" name="nom" required><br>
-    Cognom: <input type="text" name="cognom" required><br>
-    Edat: <input type="number" name="edat" required><br>
-    Telèfon: <input type="text" name="telefon" required><br>
+<form method="POST" action="{{ url_for('afegir_dades_personals') }}">
+    <label for="nom">Nom:</label>
+    <input type="text" id="nom" name="nom" required><br>
 
-    <div id="professor_fields" style="display:none;">
-        Plaça fixa (Sí/No): <input type="text" name="placa_fixa"><br>
-    </div>
-    <div id="alumne_fields" style="display:none;">
-        Identificador alumne: <input type="text" name="identificador_alumne"><br>
-    </div>
+    <label for="cognom">Cognom:</label>
+    <input type="text" id="cognom" name="cognom" required><br>
 
-    <input type="submit" value="Guardar Dades">
+    <label for="edat">Edat:</label>
+    <input type="number" id="edat" name="edat" required><br>
+
+    <label for="telefon">Telèfon:</label>
+    <input type="text" id="telefon" name="telefon" required><br>
+
+    <button type="submit">Actualitzar Dades</button>
 </form>
 
-<script>
-function toggleFields(rol) {
-    document.getElementById('professor_fields').style.display = rol === 'professor' ? 'block' : 'none';
-    document.getElementById('alumne_fields').style.display = rol === 'alumne' ? 'block' : 'none';
-}
-</script>
-
 {% if missatge %}
-<p>{{ missatge }}</p>
+    <p>{{ missatge }}</p>
 {% endif %}

@@ -41,12 +41,12 @@
         </form>
         {% endif %}
     
-        <h2>Lista de Proyectos</h2>
+        <!--<h2>Lista de Proyectos</h2>
         <form method="POST">
             <label for="buscasignatura">Buscar por Asignatura:</label>
             <input type="text" id="buscasignatura" name="buscasignatura" required>
             <input type="submit" value="Buscar">
-        </form>
+        </form>-->
     
         <table border="1">
             <thead>
@@ -65,11 +65,17 @@
                     <td>{{ proyecto.Nomprojecte }}</td>
                     <td>{{ proyecto.asignatura }}</td>
                     <td>{{ proyecto.contenido }}</td>
-                    <td>{{ proyecto.nota }}</td>
+                    <td>{{ proyecto.notes }}</td>
                 </tr>
                 {% endfor %}
+
+
             </tbody>
         </table>
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('signup') }}">Registrar</a> 
+        <a href="{{ url_for('notes') }}">Modificar notes</a> 
+        <a href="{{ url_for('homeadmin') }}">Home</a> 
     </form>
 </body>
 </html>
