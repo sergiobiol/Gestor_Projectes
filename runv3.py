@@ -264,7 +264,7 @@ def registrar():
 
         # Generar identificador_alumne solo si es alumno
         identificador_alumne = generar_identificador_alumne() if rol == "alumne" else ""
-
+        identificador_professor = "SI" if rol == "professor" else ""
         # Escribir en CSV
         with open("dadespersonals.csv", mode="a", newline="", encoding="utf-8") as archivo:
             escritor = csv.writer(archivo)
@@ -272,7 +272,7 @@ def registrar():
                 escritor.writerow(["login", "usuario", "contrasena", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"])
             
             escritor.writerow([
-                1, usuario, contraseña, nombre, apellido, edad, telefono, rol, 0, identificador_alumne
+                0, usuario, contraseña, nombre, apellido, edad, telefono, rol, identificador_professor, identificador_alumne
             ])
 
         return redirect(url_for("home"))
