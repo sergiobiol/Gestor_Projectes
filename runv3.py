@@ -123,7 +123,7 @@ def generar_identificador_alumne():
     return str(max_id + 1).zfill(3)
 
 def cargar_usuaris():
-    usuarios = []
+    usuaris = []
     with open("dadespersonals.csv", newline="", encoding="utf-8") as file:
         lector = csv.reader(file)
         next(lector)  # Saltar encabezado
@@ -138,9 +138,9 @@ def cargar_usuaris():
                 usuario_obj = Alumne(usuario, nom, cognom, edat, telefon, identificador_alumne)
             else:
                 continue  # Si el rol no es válido, lo ignoramos
-            usuarios.append(usuario_obj.to_dict())
+            usuaris.append(usuario_obj.to_dict())
 
-    return usuarios
+    return usuaris
 
 
 
@@ -226,9 +226,9 @@ def afegir_dades_personals():
 
     return render_template("home.html", usuario=session["usuario"])
 
-@app.route("/signup", methods=["GET", "POST"])
+@app.route("/registrar", methods=["GET", "POST"])
 @professor_required
-def signup():
+def registrar():
     rol = request.args.get("rolusuari")  # Captura el rol en GET
     mensaje = None
 
@@ -247,11 +247,11 @@ def signup():
             rol = request.form.get("rolusuari")
 
         if not rol:
-            return render_template("signup.html", mensaje="Debes seleccionar un rol antes de registrarte.")
+            return render_template("registrar.html", mensaje="Debes seleccionar un rol antes de registrarte.")
 
         # Validar seguridad de la contraseña
         if not re.match(segura, contraseña):
-            return render_template("signup.html", mensaje="La contraseña no es segura.")
+            return render_template("registrar.html", mensaje="La contraseña no es segura.")
 
         # Verificar si el usuario ya existe
         archivo_existe = os.path.exists("dadespersonals.csv")
@@ -260,7 +260,7 @@ def signup():
                 lector = csv.DictReader(archivo)
                 for fila in lector:
                     if fila["usuario"] == usuario:
-                        return render_template("signup.html", mensaje="El usuario ya existe.")
+                        return render_template("registrar.html", mensaje="El usuario ya existe.")
 
         # Generar identificador_alumne solo si es alumno
         identificador_alumne = generar_identificador_alumne() if rol == "alumne" else ""
@@ -277,13 +277,13 @@ def signup():
 
         return redirect(url_for("home"))
 
-    return render_template("signup.html", usuario=session.get("usuario", ""), rol=rol, mensaje=mensaje)
+    return render_template("registrar.html", usuario=session.get("usuario", ""), rol=rol, mensaje=mensaje)
 
 
-@app.route("/usuarios")
+@app.route("/usuaris")
 def listar_usuaris():
-    usuarios = cargar_usuaris()
-    return render_template("usuarios.html", usuarios=usuarios)
+    usuaris = cargar_usuaris()
+    return render_template("usuaris.html", usuaris=usuaris)
 # Función para cargar proyectos desde el archivo CSV
 
 def cargar_projectes():
@@ -391,7 +391,7 @@ def indexprojectes():
         # Obtener el proyecto seleccionado por el usuario
         proyecto_seleccionado = request.form.get("proyecto")
         if proyecto_seleccionado:
-            return redirect(url_for('mostrar_proyecto', proyecto=proyecto_seleccionado))
+            return redirect(url_for('projecte', proyecto=proyecto_seleccionado))
         else:
             # En caso de que no se haya seleccionado un proyecto (por alguna razón)
             return render_template("indexprojectes.html", proyectos=proyectos, error="Por favor, selecciona un proyecto.")
@@ -420,8 +420,8 @@ def generar_pdf_projecte(proyecto, output_pdf):
     c.save()
 
 # Función para mostrar los detalles del proyecto y permitir la descarga del PDF
-@app.route('/mostrar_proyecto/<proyecto>', methods=["GET", "POST"])
-def mostrar_proyecto(proyecto):
+@app.route('/projecte/<proyecto>', methods=["GET", "POST"])
+def projecte(proyecto):
     proyecto_encontrado = None
     with open('projectes.csv', newline='', encoding='utf-8') as file:
         lector = csv.reader(file)
@@ -444,7 +444,7 @@ def mostrar_proyecto(proyecto):
             return send_file(output_pdf, as_attachment=True)
         
         # Si la petición es GET, mostrar la vista con los detalles del proyecto
-        return render_template("mostrar_proyecto.html", proyecto=proyecto_encontrado)
+        return render_template("projecte.html", proyecto=proyecto_encontrado)
     else:
         return f"Proyecto '{proyecto}' no encontrado.", 404
 

@@ -8,3 +8,4 @@ login,usuario,contraseña,nom,cognom,edat,telefon,rol,placa_fixa,identificador_a
 1,profe,a,edu,jurca,24,242423423,professor,No,
 1,alum,a,Alumne,Numero,20,23,alumne,0,004
 1,adsa,a,esjfdi,iugyufgu,123,23,alumne,0,005
+1,nose,Hola1234!,eduprov,prov,23,23131243,alumne,0,006
