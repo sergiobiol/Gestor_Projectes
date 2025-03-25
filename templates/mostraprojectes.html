@@ -22,20 +22,7 @@
         <button type="submit">Ingresar</button>
 
         </table>
-        <h1>Proyectos</h1>
 
-        {% if session["admin"] == 1 %}
-        <h2>Agregar nota a un proyecto</h2>
-        <form method="POST">
-            <label for="usuario_proyecto">Usuario del proyecto:</label>
-            <input type="text" id="usuario_proyecto" name="usuario_proyecto" required><br><br>
-            
-            <label for="nota">Nota:</label>
-            <textarea id="nota" name="nota" rows="4" cols="50" required></textarea><br><br>
-            
-            <input type="submit" value="Agregar Nota">
-        </form>
-        {% endif %}
     
         <table border="1">
             <thead>

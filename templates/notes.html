@@ -11,7 +11,6 @@
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
-        {% if session["rol"] == "professor"%}
         <label>Afegir nota:</label>
         <input type="text" name="nota">
         <br></br>
@@ -30,9 +29,35 @@
         </select>
         <br></br>
         <button type="submit">Ingresar</button>
-        {% else %}
-        
-        {% endif %}
+
+    </table>
+
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Nombre del Proyecto</th>
+                <th>Asignatura</th>
+                <th>Contenido</th>
+                <th>Nota</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proyecto in datos %}
+            <tr>
+                <td>{{ proyecto.usuario }}</td>
+                <td>{{ proyecto.Nomprojecte }}</td>
+                <td>{{ proyecto.asignatura }}</td>
+                <td>{{ proyecto.contenido }}</td>
+                <td>{{ proyecto.notes }}</td>
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+    </table>
+
         {% if session["rol"] == "professor"%}
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('signup') }}">Registrar</a> 

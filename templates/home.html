@@ -8,26 +8,34 @@
 <body>
 
     <header>
+        <img src="/static/icons/logo.png" alt="icono">
+    
         {% if session["rol"] == "professor"%}
-        <h1>Bienvenido a tu página de inicio, {{ usuario }}, professor</h1>
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('signup') }}">Registrar</a> 
+        <a href="{{ url_for('notes') }}">Modificar notes</a> 
+        <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+        <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
+        <a href="{{ url_for('cambiarcontra') }}">Cambiar contraseña</a>
+        <a href="{{ url_for('listar_usuaris') }}">Llistar usuaris</a>
+
         {% else %}
-        <h1>Bienvenido a tu página de inicio, {{ usuario }}</h1>
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+        <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+        <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
         {% endif %}
     </header>
 
-    {% if session["rol"] == "professor"%}
-    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-    <a href="{{ url_for('signup') }}">Registrar</a> 
-    <a href="{{ url_for('notes') }}">Modificar notes</a> 
-    <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
-    <a href="{{ url_for('projectes') }}">Nou projecte</a> 
-    <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
-    {% else %}
-    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-    <a href="{{ url_for('projectes') }}">Nou projecte</a> 
-    <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
-    <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
-    {% endif %}
+    <div class="user">
+        <img src="/static/icons/usuario.png" alt="usuario">
+        {% if session["rol"] == "professor"%}
+        <a>{{ usuario}}| Professor</a>
+        {% else %}
+        <a>{{ usuario }} | Alumne</a>
+        {% endif %}
+    </div>
 
     <h2>Projectes:</h2>
     <ul>

@@ -10,26 +10,63 @@
     {% if mensaje %}
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
-    <form method="POST">
+    
+    <!-- Selector de rol -->
+    <form method="get" action="/signup">
+        <label for="rolusuari">Selecciona el rol:</label>
+        <select id="rolusuari" name="rolusuari" onchange="this.form.submit()">
+            <option value="">-- Selecciona --</option>
+            <option value="alumne" {% if rol == 'alumne' %}selected{% endif %}>Alumne</option>
+            <option value="professor" {% if rol == 'professor' %}selected{% endif %}>Professor</option>
+        </select>
+    </form>
+
+    {% if rol %}
+    <!-- Formulario de registro -->
+    <form method="post" action="/signup?rolusuari={{ rol }}">
         <label>Usuario:</label>
-        <input type="text" name="usuario" required>
-        <br>
+        <input type="text" name="usuario" required><br><br>
+
         <label>Contraseña:</label>
-        <input type="password" name="contraseña" required>
-        <br>
-        <br>
-        <label>Professor:</label>
-        <input type="text" name="professor">
-        <br>
-        <button type="submit">Ingresar</button>
-        {% if session["rol"] == "professor"%}
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-        <a href="{{ url_for('signup') }}">Registrar</a> 
-        <a href="{{ url_for('notes') }}">Modificar notes</a> 
-        <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
-        <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
-        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+        <input type="password" name="contrasena" required><br><br>
+
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required><br><br>
+
+        <label>Apellido:</label>
+        <input type="text" name="apellido" required><br><br>
+
+        <label>Edad:</label>
+        <input type="number" name="edad" required><br><br>
+
+        <label>Teléfono:</label>
+        <input type="text" name="telefono" required><br><br>
+
+        <label>Profesor:</label>
+        <input type="checkbox" name="professor" value="1"><br><br>
+
+        {% if rol == 'alumne' %}
+            <!-- Este input puede ser opcional o solo informativo -->
+            <p>El Identificador del Alumno se asignará automáticamente</p>
         {% endif %}
+        {% else %}
+        <label>Profesor:</label>
+        <input type="checkbox" name="professor" value="1"><br><br>
+        {% endif %}
+
+
+        <button type="submit">Registrar {{ rol.capitalize() }}</button>
+    </form>
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+    <a href="{{ url_for('signup') }}">Registrar</a> 
+    <a href="{{ url_for('notes') }}">Modificar notes</a> 
+    <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+    <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
+    <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+    <a href="{{ url_for('home') }}">Home</a> 
+
     </form>
     <footer>
         <p>@Drets reservats per a l'equip 3 | 2025</p>

@@ -103,6 +103,46 @@ def professor_required(f):
         return f(*args, **kwargs)
     return wrapped
 
+#   Busca el último identificador de alumno y suma 1, formato 3 dígitos (001, 002...)
+def generar_identificador_alumne():
+    if not os.path.exists("dades_personals.csv"):
+        return '001'
+
+    max_id = 0
+    with open("dades_personals.csv", 'r', encoding="utf-8") as file:
+        reader = csv.reader(file)
+        next(reader, None)
+        for fila in reader:
+            if len(fila) >= 10 and fila[7] == 'alumne' and fila[9]:
+                try:
+                    num = int(fila[9])
+                    if num > max_id:
+                        max_id = num
+                except ValueError:
+                    continue
+    return str(max_id + 1).zfill(3)
+
+def cargar_usuaris():
+    usuarios = []
+    with open("dades_personals.csv", newline="", encoding="utf-8") as file:
+        lector = csv.reader(file)
+        next(lector)  # Saltar encabezado
+        for fila in lector:
+            if len(fila) < 10:
+                continue  # Saltar filas incompletas
+            login, usuario, contraseña, nom, cognom, edat, telefon, rol, placa_fixa, identificador_alumne = fila
+
+            if rol.lower() == "professor":
+                usuario_obj = Professor(usuario, nom, cognom, edat, telefon, placa_fixa)
+            elif rol.lower() == "alumne":
+                usuario_obj = Alumne(usuario, nom, cognom, edat, telefon, identificador_alumne)
+            else:
+                continue  # Si el rol no es válido, lo ignoramos
+            usuarios.append(usuario_obj.to_dict())
+
+    return usuarios
+
+
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -186,50 +226,66 @@ def afegir_dades_personals():
 
     return render_template("home.html", usuario=session["usuario"])
 
-
 @app.route("/signup", methods=["GET", "POST"])
 @professor_required
 def signup():
+    rol = request.args.get("rolusuari")  # Captura el rol en GET
+    mensaje = None
+
     if request.method == "POST":
         segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
         usuario = request.form["usuario"]
-        contraseña = request.form["contraseña"]
-        professor = request.form["professor"]        
-        #Usem un a expresio regular per a asegurarnos que la contraseña sigui segura
-        if not re.match(segura, contraseña):
-            return render_template("signup.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.")
+        contraseña = request.form["contrasena"]
+        nombre = request.form["nombre"]
+        apellido = request.form["apellido"]
+        edad = request.form["edad"]
+        telefono = request.form["telefono"]
+        professor = request.form.get("professor")  # Checkbox (1 si está marcado)
 
+        # Si el rol no se pasó por GET, intenta capturarlo desde POST
+        if not rol:
+            rol = request.form.get("rolusuari")
+
+        if not rol:
+            return render_template("signup.html", mensaje="Debes seleccionar un rol antes de registrarte.")
+
+        # Validar seguridad de la contraseña
+        if not re.match(segura, contraseña):
+            return render_template("signup.html", mensaje="La contraseña no es segura.")
+
+        # Verificar si el usuario ya existe
         archivo_existe = os.path.exists("dades_personals.csv")
-        
-        with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
-            lector = csv.DictReader(archivo)
-            for fila in lector:
-                if fila["usuario"] == usuario:
-                    return render_template("signup.html", mensaje="El usuario ya existe")
-                
-        
-        # Si el archivo no existe, se crea con encabezados
+        if archivo_existe:
+            with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
+                lector = csv.DictReader(archivo)
+                for fila in lector:
+                    if fila["usuario"] == usuario:
+                        return render_template("signup.html", mensaje="El usuario ya existe.")
+
+        # Generar identificador_alumne solo si es alumno
+        identificador_alumne = generar_identificador_alumne() if rol == "alumne" else ""
+
+        # Escribir en CSV
         with open("dades_personals.csv", mode="a", newline="", encoding="utf-8") as archivo:
             escritor = csv.writer(archivo)
-            
-            # Escribir los encabezados solo si el archivo no existe
             if not archivo_existe:
-                escritor.writerow(["usuario", "contraseña"])
+                escritor.writerow(["login", "usuario", "contrasena", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"])
             
-            # Escribir el nuevo usuario amb el nom de usuari, la contraseña, si es admin(1) o no (0) i el usuari que l'ha creat
-            if professor == "1":
-                escritor.writerow([0,usuario, contraseña,0,0,0,0,"professor",0])
-            else:
-                escritor.writerow([0,usuario, contraseña,0,0,0,0,"alumne",0])
+            escritor.writerow([
+                1, usuario, contraseña, nombre, apellido, edad, telefono, rol, 0, identificador_alumne
+            ])
 
-        # Redirigir al login después de registrar el usuario
         return redirect(url_for("home"))
-        
-    return render_template("signup.html", usuario=session["usuario"])
+
+    return render_template("signup.html", usuario=session.get("usuario", ""), rol=rol, mensaje=mensaje)
 
 
+@app.route("/usuarios")
+def listar_usuaris():
+    usuarios = cargar_usuaris()
+    return render_template("usuarios.html", usuarios=usuarios)
 # Función para cargar proyectos desde el archivo CSV
-def cargar_proyectos():
+def cargar_projectes():
     proyectos = []
     with open('projectes.csv', newline='', encoding='utf-8') as file:
         lector = csv.reader(file)
@@ -238,6 +294,22 @@ def cargar_proyectos():
             if len(fila) > 0:  # Verificar que la fila no esté vacía
                 proyectos.append(fila[0])  # Guardamos solo el título del proyecto
     return proyectos
+
+
+def cargar_projectes_notes():
+    projectesnotes = []
+    with open('projectes.csv', newline='', encoding='utf-8') as file:
+        lector = csv.reader(file)
+        next(lector)  # Saltar encabezado
+        for fila in lector:
+            if len(fila) >= 4:  # Asegurar que la fila tiene todos los datos
+                projectesnotes.append({
+                    "nom_projecte": fila[0],
+                    "contingut": fila[1],
+                    "usuario": fila[2],
+                    "asignatura": fila[3]
+                })
+    return projectesnotes
 
 
 @app.route("/cargarproyectos", methods=["GET", "POST"])
@@ -281,19 +353,21 @@ def home():
 @login_required
 def guardar_y_redirigir():
     # Obtener los proyectos según el rol del usuario
-    proyectos = cargar_proyectos()
+    proyectos = cargar_projectes()
 
     # Guardamos los proyectos en la sesión (para pasarlos a la página de home)
     session['proyectos'] = proyectos
 
     # Redirigimos al usuario a la página de home
     return redirect(url_for('home'))  # Redirige a la página /home
+
+
 # Ruta para la página principal de proyectos
 @app.route("/indexprojectes", methods=["GET", "POST"])
 @login_required
 def indexprojectes():
     # Cargar proyectos siempre desde el archivo CSV
-    proyectos = cargar_proyectos()
+    proyectos = cargar_projectes()
 
     if request.method == "POST":
         # Obtener el proyecto seleccionado por el usuario
@@ -308,7 +382,7 @@ def indexprojectes():
 
 
 # Función para generar el PDF del proyecto
-def generar_pdf_proyecto(proyecto, output_pdf):
+def generar_pdf_projecte(proyecto, output_pdf):
     c = canvas.Canvas(output_pdf, pagesize=letter)
     width, height = letter
     y_position = height - 50
@@ -346,7 +420,7 @@ def mostrar_proyecto(proyecto):
             output_pdf = f"{proyecto}.pdf"  # Usamos el nombre del proyecto como nombre del archivo PDF
             
             # Generamos el PDF
-            generar_pdf_proyecto(proyecto_encontrado, output_pdf)
+            generar_pdf_projecte(proyecto_encontrado, output_pdf)
             
             # Enviar el archivo PDF al usuario para su descarga
             return send_file(output_pdf, as_attachment=True)
@@ -361,7 +435,7 @@ def mostrar_proyecto(proyecto):
 def cambiarcontra():
     segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
     if request.method == "POST":
-        usuari=session["usuario"]
+        usuari=request.form["usuari"]
         nova = request.form["nova"]
         confirmar = request.form["confirmar"]
         nou = []
@@ -398,14 +472,16 @@ def cambiarcontra():
 @professor_required
 def notes():
     if request.method == "POST":
+        proyectos = cargar_projectes_notes()
+        datos = []
         nota = request.form["nota"]  
         buscusuari=request.form["buscusuari"]  
         buscprojecte= request.form["buscprojecte"]
         asignatura = request.form["buscasignatura"]
         proyectos_actualizados = []
+        #obrir projectes per a revisar que el usuari, asignatura i nom coincidixque i si coincideix modifica la nota
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)
-           
             for fila in lectura:
                 if fila["usuario"] == buscusuari and fila["asignatura"] == asignatura and fila["Nomprojecte"] == buscprojecte:
                     fila["notes"] = nota  # Agregar la nota al proyecto
@@ -416,6 +492,18 @@ def notes():
             writer = csv.DictWriter(archivo, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(proyectos_actualizados)
+        #mostrar tots els projectes per pantalla
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)
+            for fila in lectura:
+                datos.append({
+                    "usuario": fila["usuario"],
+                    "Nomprojecte": fila["Nomprojecte"],
+                    "asignatura": fila["asignatura"],
+                    "contenido": fila.get("contingut", "No especificado"),
+                    "notes": fila.get("notes", "No asignada")  # Mostrar la nota si existe
+                })       
+        return render_template("notes.html", datos=datos, usuario=session["usuario"], proyectos=proyectos)
     return render_template("notes.html", usuario=session["usuario"])
 
 
@@ -466,7 +554,5 @@ def mostraprojectes():
                     })       
     return render_template("mostraprojectes.html", datos=datos, usuario=session["usuario"])
 
-
-
 if __name__ == "__main__":
-    app.run(host="192.168.221.144", debug=True)
+    app.run(host="192.168.17.65", debug=True)

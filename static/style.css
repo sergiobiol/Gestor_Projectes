@@ -5,25 +5,29 @@ body{
     margin: 0;
     height: 100%;
     width: 100%;
-    background-color: #f0f0f0; 
+    background-color: white; 
 }
 header{
     background-color: black;
     color: white;
     width: 100%;
     display: flexbox;
-    margin-top: 0;
+    top: 0;
     text-align: center;
-}
-header h1{
-    margin: 0;
+    place-items: center;
+
 }
 header img{
     width: 100px;
-    margin: 1px;
+    margin-left: 50%;
+    grid-row: 1;
+}
+header a{
+    grid-row: 2;
 }
 main{
     text-align: center;
+    align-content: center;
 }
 .login{
     width: 50%;
@@ -82,6 +86,22 @@ main{
 .dades input:hover{
     background-color: #f0f0f0;
 }
+.user{
+    background-color: #f0f0f0;
+    display: inline-flex;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 30px;
+    align-content: center;
+    border: 1px solid black;
+}
+.user img{
+    width: 25px;
+    height: 25px;
+}
+.use a{
+    vertical-align: middle;
+}
 footer{
     position: absolute;
     bottom: 0;
@@ -91,3 +111,27 @@ footer{
     text-align: center;
 }
 
+
+
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+tr:hover {
+    background-color: #ddd;
+}
