@@ -12,18 +12,20 @@
     <a href="{{ url_for('signup') }}">Registrar</a> 
     <a href="{{ url_for('notes') }}">Modificar notes</a> 
     <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
-    <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
     <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+    <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
     {% else %}
     <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
     <a href="{{ url_for('projectes') }}">Nou projecte</a> 
-    <a href="{{ url_for('projectes') }}">Notes</a> 
+    <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+    <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
     {% endif %}
-
-
 
     <div class="dashboard">
         <h3>Projectes</h3> 
         <p></p>
     </div>
+    <footer>
+        <p>@Drets reservats per a l'equip 3 | 2025</p>
+    </footer>
 </body>

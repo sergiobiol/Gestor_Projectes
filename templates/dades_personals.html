@@ -13,17 +13,10 @@
         <div class="dades">
             <img src="/static/icons/logo.png" alt="icono">
             <form method="POST" action="{{ url_for('afegir_dades_personals') }}">
-                <label for="nom">Nom:</label>
-                <input type="text" id="nom" name="nom" required><br>
-            
-                <label for="cognom">Cognom:</label>
-                <input type="text" id="cognom" name="cognom" required><br>
-            
-                <label for="edat">Edat:</label>
-                <input type="number" id="edat" name="edat" required><br>
-            
-                <label for="telefon">Telèfon:</label>
-                <input type="text" id="telefon" name="telefon" required><br>
+                <input type="text" placeholder="Nom" id="nom" name="nom" required><br>
+                <input type="text" placeholder="Cognom" id="cognom" name="cognom" required><br>
+                <input type="number" placeholder="Edat" id="edat" name="edat" required><br>
+                <input type="text" placeholder="Numero de telefon" id="telefon" name="telefon" required><br>
             
                 <button type="submit">Actualitzar Dades</button>
             </form>

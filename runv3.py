@@ -8,7 +8,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
-app.secret_key = "clave_secreta_segura"  # Necessari per gestionar sessions
+app.secret_key = "clau_hiper_ultra_mega_secreta_bro_123"  # Necessari per gestionar sessions
 
 class Usuari:
     def __init__(self, usuario, nom, cognom, edat, telefon):
@@ -67,7 +67,6 @@ def verificar_credenciales(user,password):
             for fila in lector:
                 if fila["usuario"] == user:
                     if fila["contraseña"] == password:
-                        print(fila["rol"])
                         return fila["rol"]  # Devuelve el rol del usuario
                     else:
                         return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
@@ -229,44 +228,85 @@ def signup():
     return render_template("signup.html", usuario=session["usuario"])
 
 
+# Función para cargar proyectos desde el archivo CSV
 def cargar_proyectos():
     proyectos = []
     with open('projectes.csv', newline='', encoding='utf-8') as file:
         lector = csv.reader(file)
         next(lector)  # Saltar encabezado
         for fila in lector:
-            proyectos.append(fila[0])  # Guardamos solo el título del proyecto
+            if len(fila) > 0:  # Verificar que la fila no esté vacía
+                proyectos.append(fila[0])  # Guardamos solo el título del proyecto
     return proyectos
 
+# Ruta para la página principal de proyectos
 @app.route("/indexprojectes", methods=["GET", "POST"])
 @login_required
 def indexprojectes():
     # Cargar proyectos y almacenarlos en la sesión
+    if 'proyectos' not in session:
+        session['proyectos'] = cargar_proyectos()
+
+    proyectos = session['proyectos']
     if request.method == "POST":
-        if 'proyectos' not in session:
-            session['proyectos'] = cargar_proyectos()
-
-        proyectos = session['proyectos']
-        if request.method == "POST":
-            # Obtener el proyecto seleccionado por el usuario
-            proyecto_seleccionado = request.form.get("proyecto")
+        # Obtener el proyecto seleccionado por el usuario
+        proyecto_seleccionado = request.form.get("proyecto")
+        if proyecto_seleccionado:
             return redirect(url_for('mostrar_proyecto', proyecto=proyecto_seleccionado))
-        return render_template("indexprojectes.html", proyectos=proyectos, usuario=session["usuario"])
+        else:
+            # En caso de que no se haya seleccionado un proyecto (por alguna razón)
+            return render_template("indexprojectes.html", proyectos=proyectos, error="Por favor, selecciona un proyecto.")
 
-@app.route("/mostrar_proyecto/<proyecto>")
-@login_required
+    return render_template("indexprojectes.html", proyectos=proyectos)
+
+# Función para generar el PDF del proyecto
+def generar_pdf_proyecto(proyecto, output_pdf):
+    c = canvas.Canvas(output_pdf, pagesize=letter)
+    width, height = letter
+    y_position = height - 50
+
+    # Configuramos la fuente y el tamaño de letra
+    c.setFont("Helvetica", 12)
+
+    # Título del proyecto
+    c.drawString(100, y_position, f"Proyecto: {proyecto[0]}")
+    y_position -= 20
+    
+    # Contenido del proyecto
+    c.drawString(100, y_position, f"Contenido: {proyecto[1]}")
+    y_position -= 40
+
+    # Guardamos el archivo PDF
+    c.save()
+
+# Función para mostrar los detalles del proyecto y permitir la descarga del PDF
+@app.route('/mostrar_proyecto/<proyecto>', methods=["GET", "POST"])
 def mostrar_proyecto(proyecto):
-    # Cargar el contenido del proyecto seleccionado
-    contenido_proyecto = ""
+    proyecto_encontrado = None
     with open('projectes.csv', newline='', encoding='utf-8') as file:
         lector = csv.reader(file)
         next(lector)  # Saltar encabezado
         for fila in lector:
-            if fila[0] == proyecto:
-                contenido_proyecto = fila[1]  # Suponiendo que el contenido está en la segunda columna
-                break
+            if len(fila) > 0 and fila[0] == proyecto:
+                proyecto_encontrado = fila  # Guardamos la fila del proyecto encontrado
+                break  # Terminamos el ciclo si encontramos el proyecto
 
-    return render_template("mostrar_proyecto.html", proyecto=proyecto, contenido=contenido_proyecto, usuario=session["usuario"])
+    # Verificamos si encontramos el proyecto
+    if proyecto_encontrado:
+        if request.method == "POST":
+            # Nombre del archivo PDF será el nombre del proyecto
+            output_pdf = f"{proyecto}.pdf"  # Usamos el nombre del proyecto como nombre del archivo PDF
+            
+            # Generamos el PDF
+            generar_pdf_proyecto(proyecto_encontrado, output_pdf)
+            
+            # Enviar el archivo PDF al usuario para su descarga
+            return send_file(output_pdf, as_attachment=True)
+        
+        # Si la petición es GET, mostrar la vista con los detalles del proyecto
+        return render_template("mostrar_proyecto.html", proyecto=proyecto_encontrado)
+    else:
+        return f"Proyecto '{proyecto}' no encontrado.", 404
 
 @app.route("/cambiarcontra", methods=["GET", "POST"])
 @login_required
@@ -354,11 +394,6 @@ def projectes():
     return render_template("projectes.html", usuario=session["usuario"])
 
 
-'''@app.route("/homeadmin", methods=["GET", "POST"])
-@professor_required
-def homeadmin():
-    return render_template("homeadmin.html", usuario=session["usuario"])
-'''
 
 @app.route("/home", methods=["GET", "POST"])
 @login_required

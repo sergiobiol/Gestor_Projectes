@@ -1,4 +1,3 @@
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +6,31 @@
     <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>
-    <h1>{{ proyecto }}</h1>
-    <p>{{ contenido }}</p>
-    <a href="/">Volver a la selección de proyectos</a>
+    <h1>Detalles del Proyecto: {{ proyecto[0] }}</h1>
+    <p><strong>Contenido:</strong> {{ proyecto[1] }}</p>
+    
+    <!-- Botó pera generar y descargar el PDF -->
+    <form action="{{ url_for('mostrar_proyecto', proyecto=proyecto[0]) }}" method="POST">
+        <button type="submit">Descargar PDF</button>
+    </form>
+    {% if session["rol"] == "professor"%}
+    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+    <a href="{{ url_for('signup') }}">Registrar</a> 
+    <a href="{{ url_for('notes') }}">Modificar notes</a> 
+    <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+    <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+    <a href="{{ url_for('indexprojectes') }}">Tornar a la seccio de projectes</a>
+    <a href="{{ url_for('home') }}">Home</a>
+
+    {% else %}
+    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+    <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+    <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+    <a href="{{ url_for('indexprojectes') }}">Tornar a la seccio de projectes</a>
+    <a href="{{ url_for('home') }}">Home</a>
+    {% endif %}
+
+    <footer>
+        <p>@Drets reservats per a l'equip 3 | 2025</p>
+    </footer>
 </body>
-</html>

@@ -11,12 +11,6 @@
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
-        {% if session["admin"] == "1"%}
-        <h2>Zona Administrativa</h2>
-        <p>Esta sección solo es visible para administradores.</p>
-        {% else %}
-        <p>No tienes acceso a esta sección.</p>
-        {% endif %}
         <label>Nom nou projecte:</label>
         <input type="text" name="Nomprojecte" required>
         <br></br>
@@ -32,12 +26,24 @@
         </select>
         <br></br>
         <button type="submit">Ingresar</button>
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+
         {% if session["rol"] == "professor"%}
-        <a href="{{ url_for('homeadmin') }}">Home</a>
-        
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('signup') }}">Registrar</a> 
+        <a href="{{ url_for('notes') }}">Modificar notes</a> 
+        <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+        <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
+        <a href="{{ url_for('home') }}">Home</a> 
+        <a href="{{ url_for('indexprojectes') }}">Crear pdf</a>
+
         {% else %}
-        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('projectes') }}">Nou projecte</a>  
+        <a href="{{ url_for('home') }}">home</a> 
+        <a href="{{ url_for('indexprojectes') }}">Crear pdf</a>
         {% endif %}
     </form>
+    <footer>
+        <p>@Drets reservats per a l'equip 3 | 2025</p>
+    </footer>
 </body>

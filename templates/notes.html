@@ -11,6 +11,7 @@
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
+        {% if session["rol"] == "professor"%}
         <label>Afegir nota:</label>
         <input type="text" name="nota">
         <br></br>
@@ -29,9 +30,23 @@
         </select>
         <br></br>
         <button type="submit">Ingresar</button>
+        {% else %}
+        
+        {% endif %}
+        {% if session["rol"] == "professor"%}
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('signup') }}">Registrar</a> 
         <a href="{{ url_for('notes') }}">Modificar notes</a> 
-        <a href="{{ url_for('homeadmin') }}">Home</a> 
+        <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+        <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
+        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+        {% else %}
+        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+        <a href="{{ url_for('projectes') }}">Notes</a> 
+        {% endif %}
     </form>
+    <footer>
+        <p>@Drets reservats per a l'equip 3 | 2025</p>
+    </footer>
 </body>
