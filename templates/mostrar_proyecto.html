@@ -14,7 +14,7 @@
         <button type="submit">Descargar PDF</button>
     </form>
     {% if session["rol"] == "professor"%}
-    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+    <a href="{{ url_for('logout') }}" class="btn">Cerrar Sesión</a>
     <a href="{{ url_for('signup') }}">Registrar</a> 
     <a href="{{ url_for('notes') }}">Modificar notes</a> 
     <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
@@ -22,13 +22,15 @@
     <a href="{{ url_for('indexprojectes') }}">Tornar a la seccio de projectes</a>
     <a href="{{ url_for('home') }}">Home</a>
 
+
     {% else %}
+
     <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
     <a href="{{ url_for('projectes') }}">Nou projecte</a> 
     <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
     <a href="{{ url_for('indexprojectes') }}">Tornar a la seccio de projectes</a>
     <a href="{{ url_for('home') }}">Home</a>
-    {% endif %}
+    {% endif %} 
 
     <footer>
         <p>@Drets reservats per a l'equip 3 | 2025</p>

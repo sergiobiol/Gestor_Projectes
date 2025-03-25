@@ -126,7 +126,7 @@ def login():
 
             # Ahora que hemos leído el archivo, hacemos las redirecciones
             if login_valido:                
-                return render_template("home.html", usuario=session["usuario"])
+                 return redirect(url_for('home'))
 
             else:
                 # Si el login és per primer cop, redirigimos a dades_personals.html
@@ -239,15 +239,62 @@ def cargar_proyectos():
                 proyectos.append(fila[0])  # Guardamos solo el título del proyecto
     return proyectos
 
+
+@app.route("/cargarproyectos", methods=["GET", "POST"])
+@login_required
+def cargar_proyectos_home():
+    proyectos = []
+    usuario = session.get('usuario')
+    rol = session.get('rol')
+
+    with open('projectes.csv', newline='', encoding='utf-8') as file:
+            lector = csv.reader(file)
+            next(lector)  # Saltar encabezado
+            for fila in lector:
+                if len(fila) > 0:
+                    proyecto = fila[0]  # Nombre del proyecto
+                    contenido = fila[1]  # Contenido del proyecto
+                    proyecto_usuario = fila[2]  # Usuario propietario del proyecto
+                    proyecto_asignatura = fila[3] #asignatura del proyecto
+                    # Si el usuario es profesor, mostramos todos los proyectos
+                    if rol == 'professor':
+                        proyectos.append({'nombre': proyecto, 'contenido': contenido, 'usuario': proyecto_usuario, 'asignatura': proyecto_asignatura})
+                    # Si el usuario es alumno, mostramos solo sus proyectos
+                    elif rol == 'alumne' and proyecto_usuario == usuario:
+                        proyectos.append({'nombre': proyecto, 'contenido': contenido, 'usuario': proyecto_usuario, 'asignatura': proyecto_asignatura})
+
+    return proyectos
+
+@app.route("/home")
+@login_required
+def home():
+    # Cargar proyectos según el rol del usuario
+    proyectos = cargar_proyectos_home()
+
+    # Almacenar los proyectos en la sesión para usarlos en otras rutas
+    session['proyectos'] = proyectos
+
+    # Devolvemos la plantilla con los proyectos
+    return render_template("home.html", proyectos=proyectos, usuario=session["usuario"])
+
+@app.route("/guardar_y_redirigir", methods=["GET", "POST"])
+@login_required
+def guardar_y_redirigir():
+    # Obtener los proyectos según el rol del usuario
+    proyectos = cargar_proyectos()
+
+    # Guardamos los proyectos en la sesión (para pasarlos a la página de home)
+    session['proyectos'] = proyectos
+
+    # Redirigimos al usuario a la página de home
+    return redirect(url_for('home'))  # Redirige a la página /home
 # Ruta para la página principal de proyectos
 @app.route("/indexprojectes", methods=["GET", "POST"])
 @login_required
 def indexprojectes():
-    # Cargar proyectos y almacenarlos en la sesión
-    if 'proyectos' not in session:
-        session['proyectos'] = cargar_proyectos()
+    # Cargar proyectos siempre desde el archivo CSV
+    proyectos = cargar_proyectos()
 
-    proyectos = session['proyectos']
     if request.method == "POST":
         # Obtener el proyecto seleccionado por el usuario
         proyecto_seleccionado = request.form.get("proyecto")
@@ -258,6 +305,7 @@ def indexprojectes():
             return render_template("indexprojectes.html", proyectos=proyectos, error="Por favor, selecciona un proyecto.")
 
     return render_template("indexprojectes.html", proyectos=proyectos)
+
 
 # Función para generar el PDF del proyecto
 def generar_pdf_proyecto(proyecto, output_pdf):
@@ -395,10 +443,7 @@ def projectes():
 
 
 
-@app.route("/home", methods=["GET", "POST"])
-@login_required
-def home():
-    return render_template("home.html", usuario=session["usuario"])
+
 
 @app.route("/mostraprojectes", methods=["GET", "POST"])
 @login_required

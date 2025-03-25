@@ -6,7 +6,15 @@
     <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>
-    <h2>Bienvenido, {{ usuario }} !</h2>
+
+    <header>
+        {% if session["rol"] == "professor"%}
+        <h1>Bienvenido a tu página de inicio, {{ usuario }}, professor</h1>
+        {% else %}
+        <h1>Bienvenido a tu página de inicio, {{ usuario }}</h1>
+        {% endif %}
+    </header>
+
     {% if session["rol"] == "professor"%}
     <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
     <a href="{{ url_for('signup') }}">Registrar</a> 
@@ -21,10 +29,21 @@
     <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
     {% endif %}
 
-    <div class="dashboard">
-        <h3>Projectes</h3> 
-        <p></p>
-    </div>
+    <h2>Projectes:</h2>
+    <ul>
+        {% if proyectos %}
+            {% for proyecto in proyectos %}
+                <li>
+                    <strong>{{ proyecto['nombre'] }}</strong><br>
+                    Contenido: {{ proyecto['contenido'] }}<br>
+                    Usuario: {{ proyecto['usuario'] }}<br>
+                    Asignatura: {{ proyecto['asignatura'] }}
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>No tienes proyectos disponibles.</li>
+        {% endif %}
+    </ul>
     <footer>
         <p>@Drets reservats per a l'equip 3 | 2025</p>
     </footer>
