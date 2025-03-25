@@ -5,34 +5,32 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Convertir</h2>
-    {% if mensaje %}
-        <p style="color: red;">{{ mensaje }}</p>
-    {% endif %}
-    <form method="POST">
-        <label>Tipus de lletra:</label>
-        <select id="opciones" name="lletra">
-            <option value="Helvetica">Helvetica</option>
-            <option value="Times-Roman">Times-Roman</option>
-            <option value="Courier">Courier</option>
-        </select>
-        <br></br>
-        <label>Mida de la lletra:</label>
-        <input type="text" name="mida" required>   
-        <br></br>
-        <button type="submit">Ingresar</button>
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-        <a href="{{ url_for('convertir') }}">Convertir a PDF</a>
-        <a href="{{ url_for('homeadmin') }}">Home</a>
-    </form>
-    <h2>Selecciona un Proyecto para Generar el PDF</h2>
+    <h2>Selecciona un Proyecto y Configuración de Fuente para Generar el PDF</h2>
     <form action="/generate_pdf" method="post">
         <label for="proyecto">Elige un proyecto:</label>
         <select name="proyecto" id="proyecto">
-            <!-- Aquí se llenarán dinámicamente los proyectos del usuario -->
+            {% for proyecto in proyectos %}
+                <option value="{{ proyecto }}">{{ proyecto }}</option>
+            {% endfor %}
         </select>
         <br><br>
+        
+        <label for="font">Elige un tipo de letra:</label>
+        <select name="font" id="font">
+            {% for font in fonts %}
+                <option value="{{ font }}">{{ font }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        
+        <label for="font_size">Elige un tamaño de letra:</label>
+        <select name="font_size" id="font_size">
+            {% for size in font_sizes %}
+                <option value="{{ size }}">{{ size }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        
         <button type="submit">Generar PDF</button>
     </form>
 </body>
-</html>

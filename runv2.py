@@ -237,61 +237,58 @@ def signup():
     return render_template("signup.html")
 
 
-@app.route("/crearpdf", methods=["GET", "POST"])
-def create_pdf(Nomprojecte, contingut):
-    if request.method == "POST":
-        c = canvas.Canvas(Nomprojecte, pagesize=letter)
-        width, height = letter
-        
-        # Agregar título
-        c.setFont("Helvetica-Bold", 20)
-        c.drawString(100, height - 100, Nomprojecte)
-        
-        # Agregar contenido
-        c.setFont("Times-Roman", 12)
-        y_position = height - 140
-        
-        for linia in contingut.split('\n'):
-            c.drawString(100, y_position, linia)
-            y_position -= 20
-        
-        c.save()
-        print(f"PDF '{Nomprojecte}' creado con éxito.")
-
-def read_csv(csv_file, usuario):
-    proyectos_usuario = []
+def generate_pdf_from_csv(csv_file, output_pdf, font, font_size):
     with open(csv_file, newline='', encoding='utf-8') as file:
         lector = csv.reader(file)
-        next(lector)
+        next(lector)  # Saltar encabezado
+        
+        c = canvas.Canvas(output_pdf, pagesize=letter)
+        width, height = letter
+        y_position = height - 50
+        
+        c.setFont(font, font_size + 6)
+        c.drawString(100, y_position, "Proyectos")
+        c.setFont(font, font_size)
+        y_position -= 40
         
         for fila in lector:
-            if fila[2] == usuario:  # Suponiendo que la tercera columna contiene el usuario
-                proyectos_usuario.append((fila[0], fila[1]))
-    
-    return proyectos_usuario
+            titulo = fila[0]
+            contenido = fila[1]
+            
+            c.setFont(font, font_size + 2)
+            c.drawString(100, y_position, titulo)
+            y_position -= 20
+            
+            c.setFont(font, font_size)
+            for linea in contenido.split('\n'):
+                c.drawString(100, y_position, linea)
+                y_position -= 15
+            
+            y_position -= 20  # Espaciado entre proyectos
+            
+            if y_position < 50:
+                c.showPage()
+                c.setFont(font, font_size)
+                y_position = height - 50
+        
+        c.save()
+        print(f"PDF '{output_pdf}' generado con éxito.")
 
-def main():
-    usuario = session["usuario"]  # Obtener el usuario actual del sistema
-    csv_file = "projectes.csv"
-    
-    proyectos = read_csv(csv_file, usuario)
-    
-    if not proyectos:
-        print("No hay proyectos disponibles para este usuario.")
-        return
-    
-    print("Seleccione un proyecto para generar el PDF:")
-    for i, (nombre, _) in enumerate(proyectos):
-        print(f"{i + 1}. {nombre}")
-    
-    opcion = int(input("Ingrese el número del proyecto: ")) - 1
-    
-    if 0 <= opcion < len(proyectos):
-        Nomprojecte, contingut = proyectos[opcion]
-        Nomprojecte = f"{Nomprojecte.replace(' ', '_')}.pdf"
-        create_pdf(Nomprojecte, contingut)
-    else:
-        print("Opción no válida.")
+@app.route("/generate_pdf", methods=["GET", "POST"])
+def generate_pdf():
+    if request.method == "POST":
+        csv_file = "projectes.csv"
+        output_pdf = "todos_los_proyectos.pdf"
+        font = request.form.get("font")
+        font_size = int(request.form.get("font_size"))
+        generate_pdf_from_csv(csv_file, output_pdf, font, font_size)
+        return f"PDF generado con éxito: <a href='/{output_pdf}'>Descargar PDF</a>"
+
+@app.route("/")
+def index():
+    fonts = ["Helvetica", "Times-Roman", "Courier"]
+    font_sizes = [10, 12, 14, 16, 18, 20]
+    return render_template("index.html", fonts=fonts, font_sizes=font_sizes)
 
 @app.route("/cambiarcontra", methods=["GET", "POST"])
 @login_required
