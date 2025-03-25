@@ -1,0 +1,21 @@
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index projecte</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
+</head>
+<body>
+    <h1>Selecciona un Proyecto</h1>
+    <form method="POST">
+        <label for="proyecto">Elige un proyecto:</label>
+        <select name="proyecto" id="proyecto" required>
+            {% for proyecto in proyectos %}
+                <option value="{{ proyecto }}">{{ proyecto }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Ver Proyecto</button>
+    </form>
+</body>
+</html>

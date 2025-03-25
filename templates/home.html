@@ -3,13 +3,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenido</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>
     <h2>Bienvenido, {{ usuario }} !</h2>
-
+    {% if session["rol"] == "professor"%}
+    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+    <a href="{{ url_for('signup') }}">Registrar</a> 
+    <a href="{{ url_for('notes') }}">Modificar notes</a> 
+    <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
+    <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
+    <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+    {% else %}
     <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
     <a href="{{ url_for('projectes') }}">Nou projecte</a> 
     <a href="{{ url_for('projectes') }}">Notes</a> 
+    {% endif %}
+
+
 
     <div class="dashboard">
         <h3>Projectes</h3> 

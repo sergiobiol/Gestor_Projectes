@@ -3,6 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nou projecte</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>
     <h2>Nou projecte</h2>
@@ -32,7 +33,11 @@
         <br></br>
         <button type="submit">Ingresar</button>
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        {% if session["rol"] == "professor"%}
         <a href="{{ url_for('homeadmin') }}">Home</a>
-        <a href="{{ url_for('convertir') }}">Convertir a pdf</a>
+        
+        {% else %}
+        <a href="{{ url_for('home') }}">Home</a>
+        {% endif %}
     </form>
 </body>

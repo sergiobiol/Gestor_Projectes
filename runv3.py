@@ -57,17 +57,23 @@ def llegir_usuaris():
                 usuaris[fila["usuario"]] = fila
     return usuaris
 
-def verificar_credenciales(usuario, contraseña):
-    """Verifica el usuario y contraseña en el archivo CSV y devuelve el rol si es válido."""
+#Verifica el usuario y contraseña en el archivo CSV y devuelve el rol si es válido.
+def verificar_credenciales(user,password):
     try:
+        user = request.form["usuario"]
+        password = request.form["contraseña"]
         with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
-                if fila["usuario"] == usuario and fila["contraseña"] == contraseña:
-                    return fila["rol"]  # Devuelve el rol del usuario
-                
+                if fila["usuario"] == user:
+                    if fila["contraseña"] == password:
+                        print(fila["rol"])
+                        return fila["rol"]  # Devuelve el rol del usuario
+                    else:
+                        return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
     except FileNotFoundError:
         print("Error: El archivo 'dades_personals.csv' no existe.")
+        
     return render_template("login.html", mensaje="Usuario o contraseña incorrectos")  # Si no encuentra el usuario, devuelve False
 
 def es_professor():
@@ -77,9 +83,8 @@ def es_professor():
     datos_usuario = usuaris.get(usuario, {})
     
     es_rol_professor = datos_usuario.get("rol") == "professor"
-    es_admin = datos_usuario.get("admin") == "1"  # Compara como string, ya que el CSV almacena "1" o "0"
     
-    return es_rol_professor or es_admin
+    return es_rol_professor
 
 def login_required(f):
     @wraps(f)  # Afegeix aquesta línia per evitar duplicacions
@@ -107,7 +112,7 @@ def login():
         contra = request.form["contraseña"]
         rol = verificar_credenciales(usuario, contra)
 
-        if rol:
+        if rol == "professor" or rol == "alumne":
             session["usuario"] = usuario  # Guarda el nombre de usuario en la sesión
             session["rol"] = rol
 
@@ -121,19 +126,16 @@ def login():
                         login_valido = True  # Si encontramos un login válido
 
             # Ahora que hemos leído el archivo, hacemos las redirecciones
-            if login_valido:
-                # Si el login es válido, redirigimos según el rol
-                if rol == "professor":
-                    return render_template("home.html", usuario=session["usuario"])
-                else:
-                    return render_template("home.html", usuario=session["usuario"])
+            if login_valido:                
+                return render_template("home.html", usuario=session["usuario"])
+
             else:
-                # Si el login no es válido, redirigimos a dades_personals.html
+                # Si el login és per primer cop, redirigimos a dades_personals.html
                 return render_template("dades_personals.html", usuario=session["usuario"])
 
         else:
             # Si las credenciales no son correctas  
-            return render_template("login.html")
+            return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
 
     return render_template("login.html")
 
@@ -183,12 +185,8 @@ def afegir_dades_personals():
             writer.writeheader()
             writer.writerows(usuaris.values())
 
-        if usuario_sessio == "professor":
-            return render_template("homeadmin.html", usuario=session["usuario"])
-        else:
-            return render_template("home.html", usuario=session["usuario"])
+    return render_template("home.html", usuario=session["usuario"])
 
-    return render_template("login.html")
 
 @app.route("/signup", methods=["GET", "POST"])
 @professor_required
@@ -226,7 +224,7 @@ def signup():
                 escritor.writerow([0,usuario, contraseña,0,0,0,0,"alumne",0])
 
         # Redirigir al login después de registrar el usuario
-        return redirect(url_for("homeadmin"))
+        return redirect(url_for("home"))
         
     return render_template("signup.html", usuario=session["usuario"])
 
@@ -356,11 +354,11 @@ def projectes():
     return render_template("projectes.html", usuario=session["usuario"])
 
 
-@app.route("/homeadmin", methods=["GET", "POST"])
+'''@app.route("/homeadmin", methods=["GET", "POST"])
 @professor_required
 def homeadmin():
     return render_template("homeadmin.html", usuario=session["usuario"])
-
+'''
 
 @app.route("/home", methods=["GET", "POST"])
 @login_required
