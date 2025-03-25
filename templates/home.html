@@ -8,7 +8,7 @@
 <body>
 
     <header>
-        <img src="/static/icons/logo.png" alt="icono">
+        <img src="/static/icons/logo.png" alt="icono"><br>
     
         {% if session["rol"] == "professor"%}
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>

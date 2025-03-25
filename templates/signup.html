@@ -6,6 +6,7 @@
     <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>  
+
     <h2>Registrar usuari</h2>
     {% if mensaje %}
         <p style="color: red;">{{ mensaje }}</p>
@@ -24,36 +25,32 @@
     {% if rol %}
     <!-- Formulario de registro -->
     <form method="post" action="/signup?rolusuari={{ rol }}">
-        <label>Usuario:</label>
+        <input type="hidden" name="rolusuari" value="{{ rol }}">
+        
+        <label>Usuari:</label>
         <input type="text" name="usuario" required><br><br>
 
         <label>Contraseña:</label>
         <input type="password" name="contrasena" required><br><br>
 
-        <label>Nombre:</label>
+        <label>Nom:</label>
         <input type="text" name="nombre" required><br><br>
 
-        <label>Apellido:</label>
+        <label>Cognom:</label>
         <input type="text" name="apellido" required><br><br>
 
-        <label>Edad:</label>
+        <label>Edat:</label>
         <input type="number" name="edad" required><br><br>
 
-        <label>Teléfono:</label>
+        <label>Teléfon:</label>
         <input type="text" name="telefono" required><br><br>
 
-        <label>Profesor:</label>
-        <input type="checkbox" name="professor" value="1"><br><br>
-
         {% if rol == 'alumne' %}
-            <!-- Este input puede ser opcional o solo informativo -->
             <p>El Identificador del Alumno se asignará automáticamente</p>
-        {% endif %}
+            <input type="hidden" name="professor" value="0">
         {% else %}
-        <label>Profesor:</label>
-        <input type="checkbox" name="professor" value="1"><br><br>
+            <input type="hidden" name="professor" value="1">
         {% endif %}
-
 
         <button type="submit">Registrar {{ rol.capitalize() }}</button>
     </form>

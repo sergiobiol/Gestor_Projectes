@@ -10,67 +10,68 @@
     {% if mensaje %}
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
+    <h1>Modificar Notes dels Projectes</h1>
+
+    <!-- Formulario para filtrar proyectos -->
     <form method="POST">
-        <label>Afegir nota:</label>
-        <input type="text" name="nota">
-        <br></br>
-        <label>Buscar Usuario:</label>
-        <input type="text" name="buscusuari">
-        <br></br>
-        <label>Buscar Titul del projecte:</label>
-        <input type="text" name="buscprojecte">
-        <br></br>
-        <label for="opciones">Asignatura:</label>
-        <select id="opciones" name="buscasignatura">
-            <option value="Catala">Catala</option>
-            <option value="Castella">Castella</option>
-            <option value="Angles">Angles</option>
-            <option value="Balatro">Balatro</option>
-        </select>
-        <br></br>
-        <button type="submit">Ingresar</button>
+        <label for="buscusuari">Usuari:</label>
+        <input type="text" id="buscusuari" name="buscusuari" required>
+        
+        <label for="buscprojecte">Projecte:</label>
+        <input type="text" id="buscprojecte" name="buscprojecte" required>
 
-    </table>
+        <label for="buscasignatura">Asignatura:</label>
+        <input type="text" id="buscasignatura" name="buscasignatura" required>
 
-    
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Nombre del Proyecto</th>
-                <th>Asignatura</th>
-                <th>Contenido</th>
-                <th>Nota</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for proyecto in datos %}
-            <tr>
-                <td>{{ proyecto.usuario }}</td>
-                <td>{{ proyecto.Nomprojecte }}</td>
-                <td>{{ proyecto.asignatura }}</td>
-                <td>{{ proyecto.contenido }}</td>
-                <td>{{ proyecto.notes }}</td>
-            </tr>
-            {% endfor %}
+        <label for="nota">Nota:</label>
+        <input type="text" id="nota" name="nota" required>
 
+        <button type="submit">Modificar Nota</button>
+    </form>
 
-        </tbody>
-    </table>
+    <h2>Llista de projectes</h2>
+    {% if datos %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Projecte</th>
+                    <th>Asignatura</th>
+                    <th>Contingut</th>
+                    <th>Nota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proyecto in datos %}
+                    <tr>
+                        <td>{{ proyecto.usuario }}</td>
+                        <td>{{ proyecto.Nomprojecte }}</td>
+                        <td>{{ proyecto.asignatura }}</td>
+                        <td>{{ proyecto.contenido }}</td>
+                        <td>{{ proyecto.notes }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hi ha projectes per a mostrar</p>
+    {% endif %}
 
         {% if session["rol"] == "professor"%}
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('signup') }}">Registrar</a> 
-        <a href="{{ url_for('notes') }}">Modificar notes</a> 
         <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
         <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
         <a href="{{ url_for('projectes') }}">Nou projecte</a> 
+        <a href="{{ url_for('home') }}">Home</a> 
+
         {% else %}
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('projectes') }}">Nou projecte</a> 
         <a href="{{ url_for('projectes') }}">Notes</a> 
         {% endif %}
     </form>
+
     <footer>
         <p>@Drets reservats per a l'equip 3 | 2025</p>
     </footer>

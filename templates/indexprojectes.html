@@ -6,17 +6,17 @@
     <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>
-    <h1>Selecciona un proyecto para descargar</h1>
+    <h1>Selecciona un projecte per a descargar</h1>
 
     <form method="POST">
-        <label for="proyecto">Elige un proyecto:</label>
+        <label for="proyecto">Selecciona un projecte:</label>
         <select name="proyecto" id="proyecto">
             {% for proyecto in proyectos %}
                 <option value="{{ proyecto }}">{{ proyecto }}</option>
             {% endfor %}
         </select>
 
-        <button type="submit">Ver detalles del proyecto</button> <br>
+        <button type="submit">Detalls</button> <br>
     
         {% if session["rol"] == "professor"%}
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>

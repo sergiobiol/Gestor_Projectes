@@ -19,11 +19,6 @@ header{
 }
 header img{
     width: 100px;
-    margin-left: 50%;
-    grid-row: 1;
-}
-header a{
-    grid-row: 2;
 }
 main{
     text-align: center;

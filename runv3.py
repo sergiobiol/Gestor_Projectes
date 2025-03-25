@@ -285,6 +285,7 @@ def listar_usuaris():
     usuarios = cargar_usuaris()
     return render_template("usuarios.html", usuarios=usuarios)
 # Función para cargar proyectos desde el archivo CSV
+
 def cargar_projectes():
     proyectos = []
     with open('projectes.csv', newline='', encoding='utf-8') as file:
@@ -307,7 +308,8 @@ def cargar_projectes_notes():
                     "nom_projecte": fila[0],
                     "contingut": fila[1],
                     "usuario": fila[2],
-                    "asignatura": fila[3]
+                    "asignatura": fila[3],
+                    "notes": fila[4]
                 })
     return projectesnotes
 
@@ -340,6 +342,22 @@ def cargar_proyectos_home():
 @app.route("/home")
 @login_required
 def home():
+    projectes = []
+    try:
+        with open('projectes.csv', newline='', encoding='utf-8') as file:
+            lector = csv.reader(file)
+            next(lector)  # Saltar encabezado
+            for fila in lector:
+                if len(fila) >= 4:  # Asegurar que la fila tiene datos
+                    projectes.append({
+                        "nom_projecte": fila[0],
+                        "contingut": fila[1],
+                        "usuario": fila[2],
+                        "asignatura": fila[3],
+                        "notes": fila[4]
+                    })
+    except FileNotFoundError:
+        projectes = []
     # Cargar proyectos según el rol del usuario
     proyectos = cargar_proyectos_home()
 
@@ -347,7 +365,7 @@ def home():
     session['proyectos'] = proyectos
 
     # Devolvemos la plantilla con los proyectos
-    return render_template("home.html", proyectos=proyectos, usuario=session["usuario"])
+    return render_template("home.html", proyectos=proyectos, usuario=session["usuario"], projectes=projectes)
 
 @app.route("/guardar_y_redirigir", methods=["GET", "POST"])
 @login_required
@@ -431,7 +449,7 @@ def mostrar_proyecto(proyecto):
         return f"Proyecto '{proyecto}' no encontrado.", 404
 
 @app.route("/cambiarcontra", methods=["GET", "POST"])
-@login_required
+@professor_required
 def cambiarcontra():
     segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
     if request.method == "POST":
@@ -472,27 +490,15 @@ def cambiarcontra():
 @professor_required
 def notes():
     if request.method == "POST":
-        proyectos = cargar_projectes_notes()
+        projectes = cargar_projectes_notes()  # Aquí debes definir esta función para cargar los proyectos
         datos = []
-        nota = request.form["nota"]  
-        buscusuari=request.form["buscusuari"]  
-        buscprojecte= request.form["buscprojecte"]
-        asignatura = request.form["buscasignatura"]
+        nota = request.form["nota"]  # Obtiene la nueva nota
+        buscusuari = request.form["buscusuari"]  # El usuario que está buscando
+        buscprojecte = request.form["buscprojecte"]  # El proyecto a modificar
+        asignatura = request.form["buscasignatura"]  # La asignatura del proyecto
         proyectos_actualizados = []
-        #obrir projectes per a revisar que el usuari, asignatura i nom coincidixque i si coincideix modifica la nota
-        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
-            lectura = csv.DictReader(archivo)
-            for fila in lectura:
-                if fila["usuario"] == buscusuari and fila["asignatura"] == asignatura and fila["Nomprojecte"] == buscprojecte:
-                    fila["notes"] = nota  # Agregar la nota al proyecto
-                proyectos_actualizados.append(fila)
-        # Guardar los proyectos con las nuevas notas en el archivo
-        with open("projectes.csv", mode="w", encoding="utf-8", newline="") as archivo:
-            fieldnames = ["Nomprojecte", "contingut" , "usuario", "asignatura" , "notes"]
-            writer = csv.DictWriter(archivo, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(proyectos_actualizados)
-        #mostrar tots els projectes per pantalla
+
+        # Abrir el archivo y cargar los proyectos
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)
             for fila in lectura:
@@ -502,9 +508,43 @@ def notes():
                     "asignatura": fila["asignatura"],
                     "contenido": fila.get("contingut", "No especificado"),
                     "notes": fila.get("notes", "No asignada")  # Mostrar la nota si existe
-                })       
-        return render_template("notes.html", datos=datos, usuario=session["usuario"], proyectos=proyectos)
-    return render_template("notes.html", usuario=session["usuario"])
+                })
+        
+        # Abrir los proyectos nuevamente para modificar la nota si coincide con los criterios
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)
+            for fila in lectura:
+                if fila["usuario"] == buscusuari and fila["asignatura"] == asignatura and fila["Nomprojecte"] == buscprojecte:
+                    fila["notes"] = nota  # Modificar la nota del proyecto
+                proyectos_actualizados.append(fila)
+        
+        # Guardar los proyectos con las nuevas notas
+        with open("projectes.csv", mode="w", encoding="utf-8", newline="") as archivo:
+            fieldnames = ["Nomprojecte", "contingut", "usuario", "asignatura", "notes"]
+            writer = csv.DictWriter(archivo, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(proyectos_actualizados)
+        
+        # Mostrar los proyectos actualizados
+        return render_template("notes.html", datos=datos, usuario=session["usuario"], projectes=projectes)
+
+    # Si la petición es GET, solo mostrar los proyectos
+    else:
+        projectes = cargar_projectes_notes()  # Cargar los proyectos (asegurate de que esta función esté definida)
+        datos = []
+        
+        with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
+            lectura = csv.DictReader(archivo)
+            for fila in lectura:
+                datos.append({
+                    "usuario": fila["usuario"],
+                    "Nomprojecte": fila["Nomprojecte"],
+                    "asignatura": fila["asignatura"],
+                    "contenido": fila.get("contingut", "No especificado"),
+                    "notes": fila.get("notes", "No asignada")
+                })
+
+        return render_template("notes.html", datos=datos, usuario=session["usuario"], projectes=projectes)
 
 
 @app.route("/projectes", methods=["GET", "POST"])
@@ -525,12 +565,8 @@ def projectes():
         with open("projectes.csv", mode="a", encoding="utf-8") as archivo:
             escritor = csv.writer(archivo)
             escritor.writerow([Nomprojecte,contingut,usuario,asignatura,notes])
-            print("aaaaaaaaaaaa")
             return render_template("projectes.html", mensaje="Creado", usuario=session["usuario"])
     return render_template("projectes.html", usuario=session["usuario"])
-
-
-
 
 
 @app.route("/mostraprojectes", methods=["GET", "POST"])
