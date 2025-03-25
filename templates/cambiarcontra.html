@@ -1,30 +1,24 @@
-<!DOCTYPE html>
-<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cambiar contraseña</title>
+    <title>Cambiar contrasenya</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="form">
-        <h2>Cambiar contraseña</h2>
+        <h2>Cambiar contrasenya</h2>
     {% if mensaje %}
         <p style="color: red;">{{ mensaje }}</p>
     {% endif %}
     <form method="POST">
-        <label>Usuari:<i class="fa-solid fa-house"></i></label>
-        <input type="text" name="usuari" required>
-        <br>
-        <label>Contraseña nova:<i class="fa-solid fa-house"></i></label>
+        <label>Contrasenya nova:<i class="fa-solid fa-house"></i></label>
         <input type="text" name="nova" required>
         <br>
-        <label>Confirmar contraseña:</label>
+        <label>Confirmar contrasenya:</label>
         <input type="password" name="confirmar" required>
         <br>
         <button type="submit">Ingresar</button>
-        <a href="{{ url_for('login') }}">Iniciar sesio</a>
+        <a href="{{ url_for('login') }}">Iniciar sessió</a>
     </form>
     </div>
 </body>
-</html>

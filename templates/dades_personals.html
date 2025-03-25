@@ -1,3 +1,10 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afegir Dades Personals</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 <form method="POST" action="{{ url_for('afegir_dades_personals') }}">
     <label for="nom">Nom:</label>
     <input type="text" id="nom" name="nom" required><br>
@@ -17,3 +24,4 @@
 {% if missatge %}
     <p>{{ missatge }}</p>
 {% endif %}
+</body>

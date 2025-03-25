@@ -3,6 +3,9 @@ from functools import wraps
 import csv
 import os
 import re
+import reportlab
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta_segura"  # Necessari per gestionar sessions
@@ -96,10 +99,7 @@ def professor_required(f):
         return f(*args, **kwargs)
     return wrapped
 
-'''@app.route("/")
-def home():
-    return render_template("login.html")
-'''
+
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -108,7 +108,6 @@ def login():
         rol = verificar_credenciales(usuario, contra)
 
         if rol:
-            print(rol,"+++++++++++++++++++++")
             session["usuario"] = usuario  # Guarda el nombre de usuario en la sesión
             session["rol"] = rol
 
@@ -119,7 +118,6 @@ def login():
                 
                 for fila in lector:
                     if fila["login"] == "1" and fila["usuario"] == usuario:
-                        print("--------------")
                         login_valido = True  # Si encontramos un login válido
 
             # Ahora que hemos leído el archivo, hacemos las redirecciones
@@ -130,12 +128,10 @@ def login():
                 else:
                     return render_template("home.html", usuario=session["usuario"])
             else:
-                print("pppppppppppppppppppppp")
                 # Si el login no es válido, redirigimos a dades_personals.html
                 return render_template("dades_personals.html", usuario=session["usuario"])
 
         else:
-            print("+++++++++++++")
             # Si las credenciales no son correctas  
             return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
 
@@ -241,16 +237,68 @@ def signup():
     return render_template("signup.html")
 
 
+@app.route("/crearpdf", methods=["GET", "POST"])
+def create_pdf(Nomprojecte, contingut):
+    if request.method == "POST":
+        c = canvas.Canvas(Nomprojecte, pagesize=letter)
+        width, height = letter
+        
+        # Agregar título
+        c.setFont("Helvetica-Bold", 20)
+        c.drawString(100, height - 100, Nomprojecte)
+        
+        # Agregar contenido
+        c.setFont("Times-Roman", 12)
+        y_position = height - 140
+        
+        for linia in contingut.split('\n'):
+            c.drawString(100, y_position, linia)
+            y_position -= 20
+        
+        c.save()
+        print(f"PDF '{Nomprojecte}' creado con éxito.")
 
-@app.route("/convertir", methods=["GET", "POST"])
-def convertir():
-    return render_template("convertirapdf.html")
+def read_csv(csv_file, usuario):
+    proyectos_usuario = []
+    with open(csv_file, newline='', encoding='utf-8') as file:
+        lector = csv.reader(file)
+        next(lector)
+        
+        for fila in lector:
+            if fila[2] == usuario:  # Suponiendo que la tercera columna contiene el usuario
+                proyectos_usuario.append((fila[0], fila[1]))
+    
+    return proyectos_usuario
+
+def main():
+    usuario = session["usuario"]  # Obtener el usuario actual del sistema
+    csv_file = "projectes.csv"
+    
+    proyectos = read_csv(csv_file, usuario)
+    
+    if not proyectos:
+        print("No hay proyectos disponibles para este usuario.")
+        return
+    
+    print("Seleccione un proyecto para generar el PDF:")
+    for i, (nombre, _) in enumerate(proyectos):
+        print(f"{i + 1}. {nombre}")
+    
+    opcion = int(input("Ingrese el número del proyecto: ")) - 1
+    
+    if 0 <= opcion < len(proyectos):
+        Nomprojecte, contingut = proyectos[opcion]
+        Nomprojecte = f"{Nomprojecte.replace(' ', '_')}.pdf"
+        create_pdf(Nomprojecte, contingut)
+    else:
+        print("Opción no válida.")
 
 @app.route("/cambiarcontra", methods=["GET", "POST"])
+@login_required
 def cambiarcontra():
     segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
     if request.method == "POST":
-        usuari = request.form["usuari"]
+        usuari=session["usuario"]
         nova = request.form["nova"]
         confirmar = request.form["confirmar"]
         nou = []
@@ -359,6 +407,5 @@ def mostraprojectes():
 
 
 
-
 if __name__ == "__main__":
-    app.run(host="192.168.221.246", debug=True)
+    app.run(host="192.168.221.144", debug=True)

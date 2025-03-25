@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +24,15 @@
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('convertir') }}">Convertir a PDF</a>
         <a href="{{ url_for('homeadmin') }}">Home</a>
+    </form>
+    <h2>Selecciona un Proyecto para Generar el PDF</h2>
+    <form action="/generate_pdf" method="post">
+        <label for="proyecto">Elige un proyecto:</label>
+        <select name="proyecto" id="proyecto">
+            <!-- Aquí se llenarán dinámicamente los proyectos del usuario -->
+        </select>
+        <br><br>
+        <button type="submit">Generar PDF</button>
     </form>
 </body>
 </html>
