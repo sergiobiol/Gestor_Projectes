@@ -31,16 +31,15 @@
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('signup') }}">Registrar</a> 
         <a href="{{ url_for('notes') }}">Modificar notes</a> 
-        <a href="{{ url_for('mostraprojectes') }}">Mostrarprojectes</a>  
-        <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
+        <a href="{{ url_for('mostraprojectes') }}">Gestionar Projectes</a>  
         <a href="{{ url_for('home') }}">Home</a> 
-        <a href="{{ url_for('indexprojectes') }}">Crear pdf</a>
+        <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
 
         {% else %}
         <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
         <a href="{{ url_for('projectes') }}">Nou projecte</a>  
         <a href="{{ url_for('home') }}">home</a> 
-        <a href="{{ url_for('indexprojectes') }}">Crear pdf</a>
+        <a href="{{ url_for('indexprojectes') }}">Convertir a PDF</a>
         {% endif %}
     </form>
     <footer>

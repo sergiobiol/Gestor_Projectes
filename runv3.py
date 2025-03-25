@@ -169,8 +169,8 @@ def login():
                  return redirect(url_for('home'))
 
             else:
-                # Si el login és per primer cop, redirigimos a dades_personals.html
-                return render_template("dades_personals.html", usuario=session["usuario"])
+                # Si el login és per primer cop, redirigimos a dadespersonals.html
+                return render_template("dadespersonals.html", usuario=session["usuario"])
 
         else:
             # Si las credenciales no son correctas  
@@ -206,7 +206,7 @@ def afegir_dades_personals():
             edat = request.form["edat"]
             telefon = request.form["telefon"]
         except KeyError as e:
-            return render_template("dades_personals.html", missatge=f"Error: Falta el camp {e} al formulari.")
+            return render_template("dadespersonals.html", missatge=f"Error: Falta el camp {e} al formulari.")
 
         # Actualizar los campos editables
         usuaris[usuario_sessio]["nom"] = nom
@@ -448,9 +448,9 @@ def mostrar_proyecto(proyecto):
     else:
         return f"Proyecto '{proyecto}' no encontrado.", 404
 
-@app.route("/cambiarcontra", methods=["GET", "POST"])
+@app.route("/canviarcontra", methods=["GET", "POST"])
 @professor_required
-def cambiarcontra():
+def canviarcontra():
     segura = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
     if request.method == "POST":
         usuari=request.form["usuari"]
@@ -459,11 +459,11 @@ def cambiarcontra():
         nou = []
         trobat = False
         if nova != confirmar:
-            return render_template("cambiarcontra.html", mensaje="Las contraseñas no coinciden.", usuario=session["usuario"])
+            return render_template("canviarcontra.html", mensaje="Las contraseñas no coinciden.", usuario=session["usuario"])
 
         # Validar si la nueva contraseña es segura
         if not re.match(segura, nova):
-            return render_template("cambiarcontra.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.", usuario=session["usuario"])
+            return render_template("canviarcontra.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.", usuario=session["usuario"])
 
          
         with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
@@ -475,15 +475,15 @@ def cambiarcontra():
                 nou.append(fila)
 
         if not trobat:
-            return render_template("cambiarcontra.html", mensaje="Usuario no encontrado.", usuario=session["usuario"])
+            return render_template("canviarcontra.html", mensaje="Usuario no encontrado.", usuario=session["usuario"])
         
         with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as archivo:
             fieldnames  = ["login", "usuario" , "contraseña" , "nom" , "cognom" , "edat" , "telefon", "rol" , "placa_fixa" , "identificador_alumne"]
             writer = csv.DictWriter(archivo, fieldnames=fieldnames )
             writer.writeheader()
             writer.writerows(nou)
-        return render_template("cambiarcontra.html", mensaje="Contraseña cambiada exitosamente.", usuario=session["usuario"])
-    return render_template("cambiarcontra.html", usuario=session["usuario"])
+        return render_template("canviarcontra.html", mensaje="Contraseña cambiada exitosamente.", usuario=session["usuario"])
+    return render_template("canviarcontra.html", usuario=session["usuario"])
 
 
 @app.route("/notes", methods=["GET", "POST"])
