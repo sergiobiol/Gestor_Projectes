@@ -1,10 +1,10 @@
 login,usuario,contraseña,nom,cognom,edat,telefon,rol,placa_fixa,identificador_alumne
-1,edu,Hola1234!,eduuuuuu,eduuu,30,3436545345,professor,si,
-1,moreno,moreno,moreno,travolta,43,24324223,professor,0,
+1,edu,edu,eduuuuuu,eduuu,30,3436545345,professor,Si,
+1,moreno,moreno,moreno,travolta,43,24324223,professor,Si,
 1,balatro,balatro,Quespada,Lastro,45,2324324,alumne,0,
 1,padalastro,padalastro,Quespada,Lastro,45,2324324,alumne,0,002
 1,alumne,alumne,alumne,alumne,13,33333,alumne,0,003
-0,sisisi,a,0,0,0,0,professor,0,
-1,profe,a,edu,jurca,24,242423423,professor,0,
+0,sisisi,a,0,0,0,0,professor,No,
+1,profe,a,edu,jurca,24,242423423,professor,No,
 1,alum,a,Alumne,Numero,20,23,alumne,0,004
 1,adsa,a,esjfdi,iugyufgu,123,23,alumne,0,005

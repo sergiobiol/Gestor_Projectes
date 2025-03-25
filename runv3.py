@@ -50,8 +50,8 @@ class Alumne(Usuari):
 
 def llegir_usuaris():
     usuaris = {}
-    if os.path.exists("dades_personals.csv"):
-        with open("dades_personals.csv", mode="r", encoding="utf-8") as fitxer:
+    if os.path.exists("dadespersonals.csv"):
+        with open("dadespersonals.csv", mode="r", encoding="utf-8") as fitxer:
             lector = csv.DictReader(fitxer)
             for fila in lector:
                 usuaris[fila["usuario"]] = fila
@@ -62,7 +62,7 @@ def verificar_credenciales(user,password):
     try:
         user = request.form["usuario"]
         password = request.form["contraseña"]
-        with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
+        with open("dadespersonals.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
                 if fila["usuario"] == user:
@@ -71,7 +71,7 @@ def verificar_credenciales(user,password):
                     else:
                         return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
     except FileNotFoundError:
-        print("Error: El archivo 'dades_personals.csv' no existe.")
+        print("Error: El archivo 'dadespersonals.csv' no existe.")
         
     return render_template("login.html", mensaje="Usuario o contraseña incorrectos")  # Si no encuentra el usuario, devuelve False
 
@@ -105,11 +105,11 @@ def professor_required(f):
 
 #   Busca el último identificador de alumno y suma 1, formato 3 dígitos (001, 002...)
 def generar_identificador_alumne():
-    if not os.path.exists("dades_personals.csv"):
+    if not os.path.exists("dadespersonals.csv"):
         return '001'
 
     max_id = 0
-    with open("dades_personals.csv", 'r', encoding="utf-8") as file:
+    with open("dadespersonals.csv", 'r', encoding="utf-8") as file:
         reader = csv.reader(file)
         next(reader, None)
         for fila in reader:
@@ -124,7 +124,7 @@ def generar_identificador_alumne():
 
 def cargar_usuaris():
     usuarios = []
-    with open("dades_personals.csv", newline="", encoding="utf-8") as file:
+    with open("dadespersonals.csv", newline="", encoding="utf-8") as file:
         lector = csv.reader(file)
         next(lector)  # Saltar encabezado
         for fila in lector:
@@ -157,7 +157,7 @@ def login():
 
             login_valido = False  # Variable para determinar si el login es válido
             # Leer archivo CSV solo una vez
-            with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
+            with open("dadespersonals.csv", mode="r", encoding="utf-8") as archivo:
                 lector = csv.DictReader(archivo)
                 
                 for fila in lector:
@@ -218,7 +218,7 @@ def afegir_dades_personals():
         usuaris[usuario_sessio]["login"] = "1"
 
         # Guardar todos los campos en el archivo CSV
-        with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as fitxer:
+        with open("dadespersonals.csv", mode="w", newline="", encoding="utf-8") as fitxer:
             fieldnames = ["login", "usuario", "contraseña", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"]
             writer = csv.DictWriter(fitxer, fieldnames=fieldnames)
             writer.writeheader()
@@ -254,9 +254,9 @@ def signup():
             return render_template("signup.html", mensaje="La contraseña no es segura.")
 
         # Verificar si el usuario ya existe
-        archivo_existe = os.path.exists("dades_personals.csv")
+        archivo_existe = os.path.exists("dadespersonals.csv")
         if archivo_existe:
-            with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
+            with open("dadespersonals.csv", mode="r", encoding="utf-8") as archivo:
                 lector = csv.DictReader(archivo)
                 for fila in lector:
                     if fila["usuario"] == usuario:
@@ -266,7 +266,7 @@ def signup():
         identificador_alumne = generar_identificador_alumne() if rol == "alumne" else ""
 
         # Escribir en CSV
-        with open("dades_personals.csv", mode="a", newline="", encoding="utf-8") as archivo:
+        with open("dadespersonals.csv", mode="a", newline="", encoding="utf-8") as archivo:
             escritor = csv.writer(archivo)
             if not archivo_existe:
                 escritor.writerow(["login", "usuario", "contrasena", "nom", "cognom", "edat", "telefon", "rol", "placa_fixa", "identificador_alumne"])
@@ -466,7 +466,7 @@ def canviarcontra():
             return render_template("canviarcontra.html", mensaje="La contraseña no es segura. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.", usuario=session["usuario"])
 
          
-        with open("dades_personals.csv", mode="r", encoding="utf-8") as archivo:
+        with open("dadespersonals.csv", mode="r", encoding="utf-8") as archivo:
             lectura = csv.DictReader(archivo)    
             for fila in lectura:
                 if fila["usuario"] == usuari:
@@ -477,7 +477,7 @@ def canviarcontra():
         if not trobat:
             return render_template("canviarcontra.html", mensaje="Usuario no encontrado.", usuario=session["usuario"])
         
-        with open("dades_personals.csv", mode="w", newline="", encoding="utf-8") as archivo:
+        with open("dadespersonals.csv", mode="w", newline="", encoding="utf-8") as archivo:
             fieldnames  = ["login", "usuario" , "contraseña" , "nom" , "cognom" , "edat" , "telefon", "rol" , "placa_fixa" , "identificador_alumne"]
             writer = csv.DictWriter(archivo, fieldnames=fieldnames )
             writer.writeheader()
