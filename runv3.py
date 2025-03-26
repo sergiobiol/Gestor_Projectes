@@ -45,6 +45,7 @@ class Alumne(Usuari):
     def __init__(self, usuario, nom, cognom, edat, telefon, identificador_alumne):
         super().__init__(usuario, nom, cognom, edat, telefon)
         self.identificador_alumne = identificador_alumne
+    
     #polimorfisme
     def to_dict(self):
         data = super().to_dict()
@@ -366,56 +367,49 @@ def indexprojectes():
 
 # generem el pdf del projecte              
 
-
-def generar_pdf_projecte(proyecto, output_pdf, font_size, font_name):
+def generar_pdf_projecte(proyecto, output_pdf, title_size, content_size, font_name):
     c = canvas.Canvas(output_pdf, pagesize=letter)
     width, height = letter
-    y_position = height - 50  # Comencem des de la part superior
+    y_position = height - 50  
 
-    # Establir la font i la mida
-    c.setFont(font_name, font_size)
+    c.setFont(font_name, title_size)
+    c.drawString(100, y_position, f"Projecte: {proyecto[0]}")  
 
-    # Imprimir el títol i el contingut del projecte
-    c.drawString(100, y_position, f"Projecte: {proyecto[0]}")  # Suponem que proyecto[0] és el nom
-    y_position -= 20
-    c.drawString(100, y_position, f"Contingut: {proyecto[1]}")  # Suponem que proyecto[1] és el contingut
-    y_position -= 40
+    y_position -= 20  
 
-    # Guardar el fitxer PDF
+    c.setFont(font_name, content_size)
+    c.drawString(100, y_position, f"Contingut: {proyecto[1]}") 
+
     c.save()
     print(f"PDF generat: {output_pdf}")
-
 
 # funcio per a mostrar els detalls del projecte i permetre la descarga del pdf
 # Ruta per mostrar els detalls del projecte i permetre la descàrrega del PDF
 @app.route('/projecte/<proyecto>', methods=["GET", "POST"])
 def projecte(proyecto):
     proyecto_encontrado = None
-    with open('projectes.csv', newline='', encoding='utf-8') as file:
+
+    with open("projectes.csv", newline='', encoding='utf-8') as file:
         lector = csv.reader(file)
-        next(lector)
+        next(lector) 
         for fila in lector:
-            if len(fila) > 0 and fila[0] == proyecto:
+            if len(fila) > 1 and fila[0] == proyecto:
                 proyecto_encontrado = fila
                 break
 
     if proyecto_encontrado:
         if request.method == "POST":
-            # Generar el PDF
-            output_pdf = f"{proyecto}.pdf"
-            generar_pdf_projecte(proyecto_encontrado, output_pdf, 12, "Helvetica")
-            
-            # Enviar el fitxer PDF a l'usuari
+            title_size = int(request.form.get('title_size', 16))  
+            content_size = int(request.form.get('content_size', 12))  
+            font_name = "Helvetica"  
+            output_pdf = os.path.join("static/pdf", f"{proyecto}.pdf")
+            generar_pdf_projecte(proyecto_encontrado, output_pdf, title_size, content_size, font_name)
+
             return send_file(output_pdf, as_attachment=True)
 
-        # Si és un GET, mostrar els detalls del projecte
         return render_template("projecte.html", proyecto=proyecto_encontrado)
     else:
         return f"Projecte '{proyecto}' no trobat.", 404
-
-
-
-
 
 
 #funcio per a cambiar la contraseña

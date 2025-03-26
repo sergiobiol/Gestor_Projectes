@@ -12,13 +12,25 @@
     <main>
         <h1>Detalls del Projecte: {{ proyecto[0] }}</h1>
         <p><strong>Contenido:</strong> {{ proyecto[1] }}</p>
-        
-        <!-- Botó pera generar y descargar el PDF -->
         <form action="{{ url_for('projecte', proyecto=proyecto[0]) }}" method="POST">
-            <button type="submit">Descargar PDF</button>
-        </form>
-    </main>
+            <label for="font_name">Selecciona la font:</label>
+            <select name="font_name" id="font_name">
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times-Roman">Times New Roman</option>
+                <option value="Courier">Courier</option>
+            </select>
+            <br>
 
+            <label for="title_size">Mida de la lletra (Títol):</label>
+            <input type="number" name="title_size" id="title_size" min="8" max="48" value="16"><br>
+        
+            <label for="content_size">Mida de la lletra (Contingut):</label>
+            <input type="number" name="content_size" id="content_size" min="8" max="48" value="12"><br>
+        
+            <br>    
+            <button type="submit">Descarregar PDF</button>
+        </form>        
+    </main>
     <footer>
         <p>@Drets reservats per a l'equip 3 | 2025</p>
     </footer>
