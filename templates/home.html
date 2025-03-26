@@ -42,8 +42,8 @@
                 {% if proyectos %}
                     {% for proyecto in proyectos %}
                         <li>
-                            <h3>{{ proyecto['nombre'] }}</h3><br>
-                            <img src="/static/icons/content.png" alt="content"> {{ proyecto['contenido'] }}<br>
+                            <h3>{{ proyecto['nom_projecte'] }}</h3><br>
+                            <img src="/static/icons/content.png" alt="content"> {{ proyecto['contingut'] }}<br>
                             <img src="/static/icons/user.png" alt="user"> {{ proyecto['usuario'] }}<br>
                             <img src="/static/icons/book.png" alt="book"> {{ proyecto['asignatura'] }}
                         </li>

@@ -62,22 +62,16 @@ def llegir_usuaris():
     return usuaris
 
 #Verifica el usuari i contrasenya en el archiu CSV i torna el rol si es valid     
-def verificar_credenciales(user,password):
+def verificar_credenciales(user, password):
     try:
-        user = request.form["usuario"]
-        password = request.form["contraseña"]
         with open("dadespersonals.csv", mode="r", encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
-                if fila["usuario"] == user:
-                    if fila["contraseña"] == password:
-                        return fila["rol"]  # retorna el rol del usuari  
-                    else:
-                        return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
+                if fila["usuario"] == user and fila["contraseña"] == password:
+                    return fila["rol"]  # retorna el rol de l'usuari
     except FileNotFoundError:
-        print("Error: El archivo 'dadespersonals.csv' no existe.")
-        
-    return render_template("login.html", mensaje="Usuario o contraseña incorrectos")  # si no troba el usuari retorna False      
+        print("Error: L'arxiu 'dadespersonals.csv' no existeix.")
+    return None  # retorna None si no troba l'usuari o la contrasenya és incorrecta
 
 def es_professor():
     usuario = session.get("usuario")  # obte el usuari de la sesio   
@@ -157,31 +151,26 @@ def login():
         contra = request.form["contraseña"]
         rol = verificar_credenciales(usuario, contra)
 
-        if rol == "professor" or rol == "alumne":
-            session["usuario"] = usuario  # guardem el nom del usuari a la sesio    
+        if rol in ["professor", "alumne"]:
+            session["usuario"] = usuario  # guardem el nom de l'usuari a la sessió    
             session["rol"] = rol
 
-            login_valido = False  # determinem si el login es valid o no        
-            # llegeix el archiu csv una vegada
+            login_valido = False  # determinem si el login és vàlid o no        
             with open("dadespersonals.csv", mode="r", encoding="utf-8") as archivo:
                 lector = csv.DictReader(archivo)
-                
                 for fila in lector:
-                    if fila["login"] == "1" and fila["usuario"] == usuario:
-                        login_valido = True  # si trobem login 1 es a dir que ja a entrat 
-                        # dirigeix al home en cas contrari a dades personals
-
-            # ara que hem llegit el archiu redirigim                   
-            if login_valido:                
-                 return redirect(url_for('home'))
-
+                    if fila["usuario"] == usuario and fila.get("login") == "1":
+                        login_valido = True  # si trobem login 1, significa que ja ha entrat abans
+                        break
+            
+            # Redirigir segons l'estat del login
+            if login_valido:
+                return redirect(url_for('home'))
             else:
-                # si entra per primer cop dirigim a dades personals              
                 return render_template("dadespersonals.html", usuario=session["usuario"])
 
         else:
-            # si no es correcte dona error de contaseña
-            return render_template("login.html", mensaje="Usuario o contraseña incorrectos")
+            return render_template("login.html", mensaje="Usuari o contrasenya incorrectes")
 
     return render_template("login.html")
 
@@ -302,35 +291,28 @@ def listar_usuaris():
     return render_template("usuaris.html", usuaris=usuaris, usuario=session["usuario"])  # Aquí también usuaris
 
 
-def cargar_projectes():
-    proyectos = []
-    with open('projectes.csv', newline='', encoding='utf-8') as file:
-        lector = csv.reader(file)
-        next(lector)  # saltm la capçalera
-        for fila in lector:
-            if len(fila) > 0:  # verifiquem que la fila no estigui buida
-                proyectos.append(fila[0])  # guardem nomes el titul del projecte 
-    return proyectos
+def carregar_projectes(com_notes=False):
+    projectes = []
+    try:
+        with open('projectes.csv', newline='', encoding='utf-8') as file:
+            lector = csv.reader(file)
+            next(lector)  # Saltem la capçalera
+            for fila in lector:
+                if len(fila) >= 1:
+                    projecte = {
+                        "nom_projecte": fila[0],
+                        "contingut": fila[1],
+                        "usuario": fila[2],
+                        "asignatura": fila[3],
+                        "notes": fila[4] if com_notes and len(fila) > 1 else "" 
+                    }
+                    projectes.append(projecte)
+    except FileNotFoundError:
+        print("Error: L'arxiu 'projectes.csv' no existeix.")
+
+    return projectes
 
 
-#carguem les notes i el projecte
-def cargar_projectes_notes():
-    projectesnotes = []
-    with open('projectes.csv', newline='', encoding='utf-8') as file:
-        lector = csv.reader(file)
-        next(lector)  # saltem la capçalera
-        for fila in lector:
-            if len(fila) >= 4:  # asegurem que la fila tingui totes les dades
-                projectesnotes.append({
-                    "nom_projecte": fila[0],
-                    "contingut": fila[1],
-                    "usuario": fila[2],
-                    "asignatura": fila[3],
-                    "notes": fila[4]
-                })
-    return projectesnotes
-
-#funcio per a cargar els projectes al home 
 @app.route("/cargarproyectos", methods=["GET", "POST"])
 @login_required
 def cargar_proyectos_home():
@@ -338,134 +320,102 @@ def cargar_proyectos_home():
     usuario = session.get('usuario')
     rol = session.get('rol')
 
-    with open('projectes.csv', newline='', encoding='utf-8') as file:
-            lector = csv.reader(file)
-            next(lector)  # saltem capçalera
-            for fila in lector:
-                if len(fila) > 0:
-                    proyecto = fila[0]  
-                    contenido = fila[1]  
-                    proyecto_usuario = fila[2]  
-                    proyecto_asignatura = fila[3] 
-                    # si el usuari es profesor mostrem tots els projectes    
-                    if rol == 'professor':
-                        proyectos.append({'nombre': proyecto, 'contenido': contenido, 'usuario': proyecto_usuario, 'asignatura': proyecto_asignatura})
-                    # si es alumne mostrem nomes els seus projectes     
-                    elif rol == 'alumne' and proyecto_usuario == usuario:
-                        proyectos.append({'nombre': proyecto, 'contenido': contenido, 'usuario': proyecto_usuario, 'asignatura': proyecto_asignatura})
-
+    projectes_notes = carregar_projectes(com_notes=True)
+    for projecte in projectes_notes:
+        if isinstance(projecte, dict):  # Comprovem que sigui un diccionari
+            if rol == 'professor' or (rol == 'alumne' and projecte["usuario"] == usuario):
+                proyectos.append(projecte)
+    
     return proyectos
 
-
-# funcio del home per a cargar els projectes del home y de mostrar projectes 
 @app.route("/home")
 @login_required
 def home():
-    projectes = []
-    try:
-        with open('projectes.csv', newline='', encoding='utf-8') as file:
-            lector = csv.reader(file)
-            next(lector)  
-            for fila in lector:
-                if len(fila) >= 4:  # asegurem que la fila tingui les dades
-                    projectes.append({
-                        "nom_projecte": fila[0],
-                        "contingut": fila[1],
-                        "usuario": fila[2],
-                        "asignatura": fila[3],
-                        "notes": fila[4]
-                    })
-    except FileNotFoundError:
-        projectes = []
-    # carguem els projectes segon el rol d'usuari
+    projectes = carregar_projectes(com_notes=True)
     proyectos = cargar_proyectos_home()
-
-    # guardem els projectes a la sesio per a usarlos en altres rutes 
     session['proyectos'] = proyectos
-
-    # tornem la plantilla amb els 2 projectes
     return render_template("home.html", proyectos=proyectos, usuario=session["usuario"], projectes=projectes)
 
 @app.route("/guardar_y_redirigir", methods=["GET", "POST"])
 @login_required
 def guardar_y_redirigir():
-    # obtenim els projectes segon el rol del usuari
-    proyectos = cargar_projectes()
-
-    # guardem els projectes a la sesio                                        
+    proyectos = carregar_projectes()
     session['proyectos'] = proyectos
-
-    # redirigim al usuari a la pagina home   
-    return redirect(url_for('home'))                              
-
+    return redirect(url_for('home'))
 
 # ruta per a la pagina de projectes de crear pdf
 @app.route("/indexprojectes", methods=["GET", "POST"])
 @login_required
 def indexprojectes():
-    # carguem els projectes sempre desde el acrhiu csv
-    proyectos = cargar_projectes()
-
+    # Carreguem els projectes des del arxiu csv
+    proyectos = carregar_projectes()  # Assegura't que carregar_projectes() retorni una llista de projectes.
+    
     if request.method == "POST":
-        # obtenim el projecte seleccionat per el usuari
+        # Obtenim el projecte seleccionat per l'usuari
         proyecto_seleccionado = request.form.get("proyecto")
+        
         if proyecto_seleccionado:
+            # Redirigir a la pàgina del projecte seleccionat
             return redirect(url_for('projecte', proyecto=proyecto_seleccionado))
         else:
-            # en cas de que no s'hagi seleccionat un projecte dona error
-            return render_template("indexprojectes.html", proyectos=proyectos, error="Por favor, selecciona un proyecto.")
+            # Si no s'ha seleccionat un projecte, mostrar missatge d'error
+            return render_template("indexprojectes.html", proyectos=proyectos, error="Per favor, selecciona un projecte.")
 
     return render_template("indexprojectes.html", proyectos=proyectos, usuario=session["usuario"])
 
 
 # generem el pdf del projecte              
-def generar_pdf_projecte(proyecto, output_pdf):
+
+
+def generar_pdf_projecte(proyecto, output_pdf, font_size, font_name):
     c = canvas.Canvas(output_pdf, pagesize=letter)
     width, height = letter
-    y_position = height - 50
+    y_position = height - 50  # Comencem des de la part superior
 
-    # configurem la font i mida de la lletra    
-    c.setFont("Helvetica", 12)
+    # Establir la font i la mida
+    c.setFont(font_name, font_size)
 
-    # titol del projecte 
-    c.drawString(100, y_position, f"Proyecto: {proyecto[0]}")
+    # Imprimir el títol i el contingut del projecte
+    c.drawString(100, y_position, f"Projecte: {proyecto[0]}")  # Suponem que proyecto[0] és el nom
     y_position -= 20
-    
-    # contingut del projecte
-    c.drawString(100, y_position, f"Contenido: {proyecto[1]}")
+    c.drawString(100, y_position, f"Contingut: {proyecto[1]}")  # Suponem que proyecto[1] és el contingut
     y_position -= 40
 
-    # guardem el archiu pdf
+    # Guardar el fitxer PDF
     c.save()
+    print(f"PDF generat: {output_pdf}")
+
 
 # funcio per a mostrar els detalls del projecte i permetre la descarga del pdf
+# Ruta per mostrar els detalls del projecte i permetre la descàrrega del PDF
 @app.route('/projecte/<proyecto>', methods=["GET", "POST"])
 def projecte(proyecto):
     proyecto_encontrado = None
     with open('projectes.csv', newline='', encoding='utf-8') as file:
         lector = csv.reader(file)
-        next(lector) 
+        next(lector)
         for fila in lector:
             if len(fila) > 0 and fila[0] == proyecto:
-                proyecto_encontrado = fila   
-                break                                                  
+                proyecto_encontrado = fila
+                break
 
-    # verifiquem si trobem el projecte  
     if proyecto_encontrado:
         if request.method == "POST":
-            # nom del archiu pdf                                
-            output_pdf = f"{proyecto}.pdf"  # usem el nom del projecte com a nom del pdf             
+            # Generar el PDF
+            output_pdf = f"{proyecto}.pdf"
+            generar_pdf_projecte(proyecto_encontrado, output_pdf, 12, "Helvetica")
             
-            # generem el pdf  
-            generar_pdf_projecte(proyecto_encontrado, output_pdf)
-            
-            # enviem el archiu pdf al usuari per a la descarrega
+            # Enviar el fitxer PDF a l'usuari
             return send_file(output_pdf, as_attachment=True)
-        
-        # si la peticio es get mostrem la vista amb els detalls del projecte
+
+        # Si és un GET, mostrar els detalls del projecte
         return render_template("projecte.html", proyecto=proyecto_encontrado)
     else:
-        return f"Proyecto '{proyecto}' no encontrado.", 404
+        return f"Projecte '{proyecto}' no trobat.", 404
+
+
+
+
 
 
 #funcio per a cambiar la contraseña
@@ -512,7 +462,7 @@ def canviarcontra():
 @professor_required
 def notes():
     if request.method == "POST":
-        projectes = cargar_projectes_notes()  # definim la funcio per a cargar projectes             
+        projectes = carregar_projectes()  # definim la funcio per a cargar projectes             
         datos = []
         nota = request.form["nota"]  # obtenim la nova nota  
         buscusuari = request.form["buscusuari"]  # l'usuari que esta buscant  
@@ -552,7 +502,7 @@ def notes():
 
     # si la peticio es get nomes mostra els projectes
     else:
-        projectes = cargar_projectes_notes()  
+        projectes = carregar_projectes()  
         datos = []
         
         with open("projectes.csv", mode="r", encoding="utf-8") as archivo:
@@ -622,4 +572,4 @@ def mostraprojectes():
     return render_template("mostraprojectes.html", datos=datos, usuario=session["usuario"])
 
 if __name__ == "__main__":
-    app.run(host="192.168.221.213",debug=True)
+    app.run(debug=True)
