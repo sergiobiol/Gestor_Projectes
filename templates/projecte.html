@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
+<header>
+    <img src="/static/icons/logo.png" alt="icono">
+</header>
 <body>
     <h1>Detalls del Projecte: {{ proyecto[0] }}</h1>
     <p><strong>Contenido:</strong> {{ proyecto[1] }}</p>

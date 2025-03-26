@@ -3,6 +3,8 @@ login,usuario,contraseña,nom,cognom,edat,telefon,rol,placa_fixa,identificador_a
 
 1,moreno,moreno,moreno,travolta,43,24324223,professor,Si,
 
+1,quinto,quinto,qinto,19,666,professor,Si,
+
 1,balatro,balatro,Quespada,Lastro,45,2324324,alumne,0,
 
 1,padalastro,padalastro,Quespada,Lastro,45,2324324,alumne,0,002

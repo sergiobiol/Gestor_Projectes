@@ -6,33 +6,55 @@
     <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>
-    <div class="form">
-        <h2>Canviar Contrasenya</h2>
-    {% if mensaje %}
-        <p style="color: red;">{{ mensaje }}</p>
-    {% endif %}
-    <form method="POST">
-        <label>Usuari:<i class="fa-solid fa-house"></i></label>
-        <input type="text" name="usuari" required>
-        <br>
-        <label>Contrasenya nova:<i class="fa-solid fa-house"></i></label>
-        <input type="text" name="nova" required>
-        <br>
-        <label>Confirmar contrasenya:</label>
-        <input type="password" name="confirmar" required>
-        <br>
-        <button type="submit">Ingresar</button>
-    
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-        <a href="{{ url_for('registrar') }}">Registrar</a> 
-        <a href="{{ url_for('notes') }}">Modificar notes</a> 
-        <a href="{{ url_for('mostraprojectes') }}">Gestionar Projectes</a>  
-        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
-        <a href="{{ url_for('indexprojectes') }}">Crearpdf</a>
-        <a href="{{ url_for('home') }}">Home</a>
+    <header>
+        <img src="/static/icons/logo.png" alt="icono"><br>
+        <div class="menu">
+            {% if session["rol"] == "professor"%}
+            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
+            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
+            <a href="{{ url_for('registrar') }}"> <img src="/static/icons/register.png" title="Registrar"></a> 
+            <a href="{{ url_for('notes') }}"><img src="/static/icons/grades.png" title="Modificar Notes"></a>
+            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>
+            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
+            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
+            <a href="{{ url_for('listar_usuaris') }}"><img src="/static/icons/list.png" title="Llistar usuaris"></a>
 
-    </form>
-    </div>
+            {% else %}
+            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
+            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a> 
+            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
+            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
+            {% endif %}
+        </div>
+        <div class="user">
+            <img src="/static/icons/user.png" alt="usuario">
+            {% if session["rol"] == "professor"%}
+            <a>{{ usuario}}| Professor</a>
+            {% else %}
+            <a>{{ usuario }} | Alumne</a>
+            {% endif %}
+        </div>
+    </header>
+    <main>
+        <div class="form">
+        <h2>Canviar Contrasenya</h2>
+        {% if mensaje %}
+            <p style="color: red;">{{ mensaje }}</p>
+        {% endif %}
+        <form method="POST">
+            <label>Usuari:<i class="fa-solid fa-house"></i></label>
+            <input type="text" name="usuari" required>
+            <br>
+            <label>Contrasenya nova:<i class="fa-solid fa-house"></i></label>
+            <input type="text" name="nova" required>
+            <br>
+            <label>Confirmar contrasenya:</label>
+            <input type="password" name="confirmar" required>
+            <br>
+            <button type="submit">Ingresar</button>
+        </form>
+        </div>
+    </main>
     <footer>
         <p>@Drets reservats per a l'equip 3 | 2025</p>
     </footer>

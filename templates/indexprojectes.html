@@ -6,35 +6,49 @@
     <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
 </head>
 <body>
-    <h1>Selecciona un projecte per a descargar</h1>
+    <header>
+        <img src="/static/icons/logo.png" alt="icono"><br>
+        <div class="menu">
+            {% if session["rol"] == "professor"%}
+            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
+            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
+            <a href="{{ url_for('registrar') }}"> <img src="/static/icons/register.png" title="Registrar"></a> 
+            <a href="{{ url_for('notes') }}"><img src="/static/icons/grades.png" title="Modificar Notes"></a>
+            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>
+            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
+            <a href="{{ url_for('canviarcontra') }}"><img src="/static/icons/key.png" title="Canviar contraseña"></a>
+            <a href="{{ url_for('listar_usuaris') }}"><img src="/static/icons/list.png" title="Llistar usuaris"></a>
 
-    <form method="POST">
-        <label for="proyecto">Selecciona un projecte:</label>
-        <select name="proyecto" id="proyecto">
-            {% for proyecto in proyectos %}
-                <option value="{{ proyecto }}">{{ proyecto }}</option>
-            {% endfor %}
-        </select>
+            {% else %}
+            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
+            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
+            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
+            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>
+            {% endif %}
+        </div>
+        <div class="user">
+            <img src="/static/icons/user.png" alt="usuario">
+            {% if session["rol"] == "professor"%}
+            <a>{{ usuario }}| Professor</a>
+            {% else %}
+            <a>{{ usuario }} | Alumne</a>
+            {% endif %}
+        </div>
+    </header>
+    <main>
+        <h1>Selecciona un projecte per a descargar</h1>
 
-        <button type="submit">Detalls</button> <br>
+        <form method="POST">
+            <label for="proyecto">Selecciona un projecte:</label>
+            <select name="proyecto" id="proyecto">
+                {% for proyecto in proyectos %}
+                    <option value="{{ proyecto }}">{{ proyecto }}</option>
+                {% endfor %}
+            </select>
     
-        {% if session["rol"] == "professor"%}
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-        <a href="{{ url_for('registrar') }}">Registrar</a> 
-        <a href="{{ url_for('notes') }}">Modificar notes</a> 
-        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
-        <a href="{{ url_for('mostraprojectes') }}">Gestionar Projectes</a>  
-        {% else %}
-        <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-        <a href="{{ url_for('projectes') }}">Nou projecte</a> 
-        <a href="{{ url_for('mostraprojectes') }}">Gestionar Projectes</a>  
-        <a href="{{ url_for('home') }}">Home</a>
-        {% endif %}
-    </form>
+            <button type="submit">Detalls</button> <br>
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+    </main>
     <footer>
         <p>@Drets reservats per a l'equip 3 | 2025</p>
     </footer>
