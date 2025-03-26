@@ -10,3 +10,4 @@ login,usuario,contraseña,nom,cognom,edat,telefon,rol,placa_fixa,identificador_a
 0,cuarto,cuarto,cuarto,cuarto,19,32432423,professor,No,
 1,test,test,jordi,martinez,67,667778457,alumne,No,
 1,programacio,Hola1234!,programacio,programacio,14,124314,alumne,,004
+0,Profe,Hola1234!,Profe,Profe,12,2132131,professor,SI,
