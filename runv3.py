@@ -203,6 +203,7 @@ def error403():
 def afegir_dades_personals():
     if "usuario" not in session:
         return redirect(url_for('login'))  # protegeix per si no hi ha usuari a la sesio
+    #CREC Q NO CAL
 
     usuario_sessio = session["usuario"]
     usuaris = llegir_usuaris()  # ha de retornar la clau 'usuario'    
@@ -241,7 +242,7 @@ def afegir_dades_personals():
 @professor_required
 def registrar():
     rol = request.args.get("rolusuari")  # capturem el rol en GET
-    mensaje = None
+    mensaje = None #CREC NO CAL
 
     if request.method == "POST":
         #creem l'expresio regular per a controlar que la contrasenya creada sigui segura
@@ -260,6 +261,7 @@ def registrar():
 
         if not rol:
             return render_template("registrar.html", mensaje="Debes seleccionar un rol antes de registrarte.")
+        #ESTOS DE DALT CREC Q NO CAL
 
         # validem la seguretat de la contrasenya
         if not re.match(segura, contraseña):
@@ -620,4 +622,4 @@ def mostraprojectes():
     return render_template("mostraprojectes.html", datos=datos, usuario=session["usuario"])
 
 if __name__ == "__main__":
-    app.run(host="192.168.221.208",debug=True)
+    app.run(host="192.168.221.213",debug=True)
