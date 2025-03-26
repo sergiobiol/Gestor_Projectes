@@ -612,4 +612,4 @@ def mostraprojectes():
     return render_template("mostraprojectes.html", datos=datos, usuario=session["usuario"])
 
 if __name__ == "__main__":
-    app.run(host="192.168.1.73",debug=True)
+    app.run(host="192.168.221.208",debug=True)
