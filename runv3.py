@@ -107,7 +107,7 @@ def professor_required(f):
         return f(*args, **kwargs)
     return wrapped
 
-# busca l'utim identificador de alumne i suma 1 a un format de 3 digits
+# busca l'ultim identificador de alumne i suma 1 a un format de 3 digits
 def generar_identificador_alumne():
     if not os.path.exists("dadespersonals.csv"):
         return '001'
