@@ -16,3 +16,6 @@ login,usuario,contraseña,nom,cognom,edat,telefon,rol,placa_fixa,identificador_a
 0,balatrez,Balatro1234!,balatrez,balatro,64,987645678,professor,No,
 
 0,cuarto,cuarto,cuarto,cuarto,19,32432423,professor,No
+
+0,test,test,cuarto,cuarto,19,32432423,alumne,No
+
