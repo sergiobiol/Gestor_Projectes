@@ -30,9 +30,9 @@
         <div class="user">
             <img src="/static/icons/user.png" alt="usuario">
             {% if session["rol"] == "professor"%}
-            <a>{{ usuario}}| Professor</a>
+            <a>{{ usuario}} | Professor</a>
             {% else %}
-            <a>{{ usuario }} | Alumne</a>
+            <a>{{ usuario}} | Alumne</a>
             {% endif %}
         </div>
     </header>
@@ -43,19 +43,19 @@
             <thead>
                 <tr>
                     <th>Login</th>
-                    <th>Usuario</th>
-                    <th>Contraseña</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
+                    <th>Usuari</th>
+                    <th>Contrasenya</th>
+                    <th>Nom</th>
+                    <th>Cognom</th>
                     <th>Edad</th>
-                    <th>Teléfono</th>
+                    <th>Telèfon</th>
                     <th>Rol</th>
-                    <th>Placa Fija</th>
-                    <th>Identificador Alumno</th>
+                    <th>Plaça Fixa</th>
+                    <th>Identificador Alumne</th>
                 </tr>
             </thead>
             <tbody>
-                {% for usuario in usuarios %}
+                {% for usuario in usuaris %}
                 <tr>
                     <td>{{ usuario.get("usuario", "-") }}</td>
                     <td>{{ usuario.get("usuario", "-") }}</td>
@@ -69,6 +69,7 @@
                     <td>{{ usuario.get("identificador_alumne", "-") }}</td>
                 </tr>
                 {% endfor %}
+
             </tbody>
         </table>
     </main>

@@ -29,7 +29,7 @@
         <div class="user">
             <img src="/static/icons/user.png" alt="usuario">
             {% if session["rol"] == "professor"%}
-            <a>{{ usuario}}| Professor</a>
+            <a>{{ usuario}} | Professor</a>
             {% else %}
             <a>{{ usuario }} | Alumne</a>
             {% endif %}
@@ -47,6 +47,7 @@
                 <option value="Castella">Castella</option>
                 <option value="Angles">Angles</option>
                 <option value="Balatro">Balatro</option>
+                <option value="Tots">Tots</option>
             </select>
             <br></br>
             <button type="submit">Ingresar</button>

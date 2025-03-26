@@ -297,8 +297,8 @@ def registrar():
 # funcio per a cargar projectes desde e archiu csv 
 @app.route("/usuaris")
 def listar_usuaris():
-    usuaris = cargar_usuaris()
-    return render_template("usuaris.html", usuaris=usuaris)
+    usuaris = cargar_usuaris()  # Cambié de usuari a usuaris
+    return render_template("usuaris.html", usuaris=usuaris, usuario=session["usuario"])  # Aquí también usuaris
 
 
 def cargar_projectes():
@@ -414,7 +414,7 @@ def indexprojectes():
             # en cas de que no s'hagi seleccionat un projecte dona error
             return render_template("indexprojectes.html", proyectos=proyectos, error="Por favor, selecciona un proyecto.")
 
-    return render_template("indexprojectes.html", proyectos=proyectos)
+    return render_template("indexprojectes.html", proyectos=proyectos, usuario=session["usuario"])
 
 
 # generem el pdf del projecte              
@@ -608,7 +608,16 @@ def mostraprojectes():
                         "asignatura": fila["asignatura"],
                         "contenido": fila.get("contingut", "No especificado"),
                         "notes": fila.get("notes", "No asignada")  
-                    })       
+                    })
+                else: 
+                    datos.append({
+                        "usuario": fila["usuario"],
+                        "Nomprojecte": fila["Nomprojecte"],
+                        "asignatura": fila["asignatura"],
+                        "contenido": fila.get("contingut", "No especificado"),
+                        "notes": fila.get("notes", "No asignada")  
+                    })
+
     return render_template("mostraprojectes.html", datos=datos, usuario=session["usuario"])
 
 if __name__ == "__main__":

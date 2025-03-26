@@ -1,26 +1,16 @@
 login,usuario,contraseña,nom,cognom,edat,telefon,rol,placa_fixa,identificador_alumne
-1,edu,edu,eduuuuuu,eduuu,30,3436545345,professor,Si,
+1,edu,edu,Edu,Jurca,19,621456871,professor,Si,
 
-1,moreno,moreno,moreno,travolta,43,24324223,professor,Si,
+1,moreno,moreno,Llorenç,Moreno,20,6543123786,professor,Si,
 
-1,quinto,quinto,qinto,19,666,professor,Si,
+1,quinto,quinto,Francesc,Quinto,20,654789564,professor,No
 
-1,balatro,balatro,Quespada,Lastro,45,2324324,alumne,0,
+1,balatro,balatro,Quespada,Lastro,45,600549087,alumne,0,001
 
-1,padalastro,padalastro,Quespada,Lastro,45,2324324,alumne,0,002
+1,padalastro,padalastro,Quespada,Lastro,45,602341651,alumne,0,002
 
-1,alumne,alumne,alumne,alumne,13,33333,alumne,0,003
+1,alumne,alumne,alumne,alumne,18,652321432,alumne,0,003
 
-0,sisisi,a,0,0,0,0,professor,No,
+1,profe,a,edu,jurca,26,642423423,professor,No,
 
-1,profe,a,edu,jurca,24,242423423,professor,No,
-
-1,alum,a,Alumne,Numero,20,23,alumne,0,004
-
-1,adsa,a,esjfdi,iugyufgu,123,23,alumne,0,005
-
-1,nose,Hola1234!,eduprov,prov,23,23131243,alumne,0,006
-
-1,puto,Hola1234!,puto,puto,12,1343424,alumne,0,007
-
-0,balatrez,Balatro1234!,balatrez,balatro,66,12442,professor,SI,
+0,balatrez,Balatro1234!,balatrez,balatro,64,987645678,professor,No,
