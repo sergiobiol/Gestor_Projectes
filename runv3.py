@@ -187,7 +187,6 @@ def login():
 
 
 #logout per a tancar la sesio
-
 @app.route("/logout")
 def logout():
     session.pop("usuario", None)
