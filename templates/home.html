@@ -1,60 +1,21 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
-</head>
-<body>
-    <header>
-        <img src="/static/icons/logo.png" alt="icono"><br>
-        <div class="menu">
-            {% if session["rol"] == "professor"%}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('registrar') }}"> <img src="/static/icons/register.png" title="Registrar"></a> 
-            <a href="{{ url_for('notes') }}"><img src="/static/icons/grades.png" title="Modificar Notes"></a> 
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            <a href="{{ url_for('canviarcontra') }}"><img src="/static/icons/key.png" title="Canviar contraseña"></a>
-            <a href="{{ url_for('listar_usuaris') }}"><img src="/static/icons/list.png" title="Llistar usuaris"></a>
-
-            {% else %}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a> 
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            {% endif %}
-        </div>
-        <div class="user">
-            <img src="/static/icons/user.png" alt="usuario">
-            {% if session["rol"] == "professor"%}
-            <a>{{ usuario}} | Professor</a>
-            {% else %}
-            <a>{{ usuario }} | Alumne</a>
-            {% endif %}
-        </div>
-    </header>
-    <main>
-        <div class="proyects">
-            <h2>Projectes:</h2>
-            <ul>
-                {% if proyectos %}
-                    {% for proyecto in proyectos %}
-                        <li>
-                            <h3>{{ proyecto['nom_projecte'] }}</h3><br>
-                            <img src="/static/icons/content.png" alt="content"> {{ proyecto['contingut'] }}<br>
-                            <img src="/static/icons/user.png" alt="user"> {{ proyecto['usuario'] }}<br>
-                            <img src="/static/icons/book.png" alt="book"> {{ proyecto['asignatura'] }}
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li>No tienes proyectos disponibles.</li>
-                {% endif %}
-            </ul>
-        </div>
-    </main>
-    <footer>
-        <p>@Drets reservats per a l'equip 3 | 2025</p>
-    </footer>
-</body>
+{% extends "base.html" %}
+{% block title %}Bienvenido{% endblock %}
+{% block content %}
+<div class="proyects">
+    <h2>Projectes:</h2>
+    <ul>
+        {% if proyectos %}
+            {% for proyecto in proyectos %}
+                <li>
+                    <h3>{{ proyecto['nom_projecte'] }}</h3><br>
+                    <img src="{{ url_for('static', filename='icons/content.png') }}" alt="content"> {{ proyecto['contingut'] }}<br>
+                    <img src="{{ url_for('static', filename='icons/user.png') }}" alt="user"> {{ proyecto['usuario'] }}<br>
+                    <img src="{{ url_for('static', filename='icons/book.png') }}" alt="book"> {{ proyecto['asignatura'] }}
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>No tienes proyectos disponibles.</li>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}

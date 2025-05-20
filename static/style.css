@@ -1,13 +1,15 @@
-*{
+* {
     font-family: sans-serif;
 }
-body{
+
+body {
     margin: 0;
     height: 100%;
     width: 100%;
-    background-color: white; 
+    background-color: white;
 }
-header{
+
+header {
     background-color: black;
     color: white;
     width: 100%;
@@ -15,21 +17,24 @@ header{
     top: 0;
     text-align: center;
     place-items: center;
-
 }
-header img{
+
+header img {
     width: 150px;
 }
-.menu{
+
+.menu {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     padding: 1rem;
 }
-.menu img{
+
+.menu img {
     width: 3rem;
 }
-.menu a{
+
+.menu a {
     text-decoration: none;
     background-color: white;
     border-radius: 10px;
@@ -37,16 +42,20 @@ header img{
     padding: 1vw;
     margin: 1vw;
 }
-.menu a:hover{
+
+.menu a:hover {
     background-color: #f0f0f1;
 }
-.menu a:link{
+
+.menu a:link {
     color: black;
 }
-.menu a:visited{
+
+.menu a:visited {
     color: black;
 }
-.user{
+
+.user {
     background-color: white;
     color: black;
     display: inline-flex;
@@ -56,113 +65,206 @@ header img{
     align-content: center;
     border: 1px solid black;
 }
-.user img{
+
+.user img {
     width: 25px;
     height: 25px;
 }
-.user a{
+
+.user a {
     vertical-align: middle;
 }
-main{
+
+main {
     text-align: center;
     align-content: center;
 }
-.login{
+
+.login {
     width: 50%;
     height: 27%;
     margin-top: 10%;
     margin-left: 20%;
     padding: 5%;
     background-color: white;
-    box-shadow: 3px  3px 3px 2px rgba(0,0,0,0.2);
+    box-shadow: 3px 3px 3px 2px rgba(0, 0, 0, 0.2);
     border-radius: 30px;
 }
-.login h2{
+
+.login h2 {
     font-size: 40px;
     margin: 0;
     margin-bottom: 20px;
 }
-.login form{
+
+.login form {
     display: inline-flexbox;
 }
-.login img{
+
+.login img {
     width: 30px;
 }
-.login input{
+
+.login input {
     padding: 5px;
     font-size: 12px;
     margin-bottom: 10px;
 }
-.login input:hover{
+
+.login input:hover {
     background-color: #f0f0f0;
 }
-.dades{
+
+.dades {
     width: 50%;
-    height: 40%;
-    margin: 0 ;
+    height: auto;
+    margin: 0;
     margin-top: 5%;
     margin-left: 25%;
     padding: 3%;
     background-color: white;
-    box-shadow: 3px  3px 3px 2px rgba(0,0,0,0.2);
+    box-shadow: 3px 3px 3px 2px rgba(0, 0, 0, 0.2);
     border-radius: 30px;
     justify-content: center;
+    text-align: left;
 }
-.dades img{
-    width: 200px;
+
+.dades h2 {
+    font-size: 24px;
+    margin: 0 0 20px 0;
+    color: #333;
 }
-.dades form{
-    margin-right: 5%;
-    display: flexbox;
+
+.dades h3 {
+    font-size: 20px;
+    margin: 20px 0;
+    color: #333;
 }
-.dades input{
-    padding: 5px;
-    font-size: 12px;
-    margin-bottom: 10px;
+
+.dades label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
 }
-.dades input:hover{
+
+.dades input,
+.dades textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.dades input:hover,
+.dades textarea:hover {
     background-color: #f0f0f0;
 }
-.proyects h2{
+
+.dades input:focus,
+.dades textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.dades textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.dades button {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+}
+
+.dades button:hover {
+    background-color: #45a049;
+}
+
+.dades a {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: white;
+    background-color: #ff4444;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.dades a:hover {
+    background-color: #cc0000;
+}
+
+.perfil-info {
+    margin-bottom: 20px;
+}
+
+.perfil-info img {
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.perfil-info p {
+    margin: 10px 0;
+}
+
+.proyects h2 {
     text-align: center;
 }
-.proyects ul{
+
+.proyects ul {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     padding: 1rem;
-
 }
-.proyects h3{
+
+.proyects h3 {
     margin: 0;
     margin-top: 1em;
     text-align: center;
 }
-.proyects li{
+
+.proyects li {
     list-style: none;
     border: 1px solid black;
-    box-shadow: 3px  3px 3px 2px rgba(0,0,0,0.2);
+    box-shadow: 3px 3px 3px 2px rgba(0, 0, 0, 0.2);
     padding: 1em;
 }
-.proyects img{
+
+.proyects img {
     width: 1rem;
     height: 1rem;
 }
-.recount{
+
+.recount {
     border: 1px solid black;
-    box-shadow: 3px  3px 3px 2px rgba(0,0,0,0.2);
+    box-shadow: 3px 3px 3px 2px rgba(0, 0, 0, 0.2);
     width: 50%;
     margin-left: 25%;
     margin-top: 2em;
 }
-.error{
+
+.error {
     border: 1px solid black;
-    box-shadow: 3px  3px 3px 2px rgba(0,0,0,0.2);
+    box-shadow: 3px 3px 3px 2px rgba(0, 0, 0, 0.2);
     width: 50%;
     margin-left: 25%;
     margin-top: 2em;
-}      
-footer{
+}
+
+footer {
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -171,8 +273,6 @@ footer{
     text-align: center;
 }
 
-
-
 table {
     width: 90%;
     margin: 100px auto;
@@ -180,18 +280,112 @@ table {
     background-color: white;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
-th, td {
+
+th,
+td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
 }
+
 th {
     background-color: #4CAF50;
     color: white;
 }
+
 tr:nth-child(even) {
     background-color: #f9f9f9;
 }
+
 tr:hover {
     background-color: #ddd;
 }
+
+/* Estils per a la pàgina de comentaris */
+.form-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group select,
+.form-group textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.submit-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: center;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+.mensaje {
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.mensaje.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.mensaje.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+

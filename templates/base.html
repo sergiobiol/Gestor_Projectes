@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestor de Projectes{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='icons/logo.png') }}" type="image/x-icon">
+
+    <style>
+    /* Tema Clar (per defecte) */
+    body {
+        background-color: #fff;
+        color: #000;
+        margin: 0;
+        padding-top: 120px;
+    }
+    header {
+        background-color: #000;
+        color: #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        z-index: 1000;
+    }
+    header img {
+        height: 80px;
+        margin-right: 25px;
+    }
+    .menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        margin: 0;
+    }
+    .menu a {
+        background-color: #fff;
+        color: #000;
+        margin: 0 10px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+    }
+    .menu a img {
+        width: 34px;
+        height: 34px;
+        display: block;
+        margin: 0 auto;
+    }
+    .menu a:hover {
+        background-color: #f0f0f0;
+    }
+    .user {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 10px 20px;
+        border-radius: 15px;
+        margin-right: 50px;
+    }
+    .user img {
+        height: 40px;
+        margin-right: 10px;
+    }
+    .user a {
+        color: #000;
+        font-size: 18px;
+        white-space: nowrap;
+    }
+    main {
+        margin-left: 40px; /* Afegeixo marge esquerre per moure el contingut cap a dins */
+        margin-right: 40px; /* Afegeixo marge dret per simetria */
+    }
+    .dades, .login, .proyects li, .recount, .error, .form-container, table {
+        background-color: #fff;
+        color: #000;
+        border: 1px solid #000;
+    }
+    .dades button, .submit-btn {
+        background-color: #4CAF50;
+    }
+    .dades button:hover, .submit-btn:hover {
+        background-color: #45a049;
+    }
+    .dades a {
+        background-color: #ff4444;
+    }
+    .dades a:hover {
+        background-color: #cc0000;
+    }
+    th {
+        background-color: #4CAF50;
+        color: #fff;
+    }
+    td, th {
+        padding: 8px;
+        text-align: left;
+    }
+
+    /* Tema Fosc */
+    body.tema-fosc {
+        background-color: #333;
+        color: #fff;
+    }
+    .tema-fosc header {
+        background-color: #1a1a1a;
+    }
+    .tema-fosc .menu a {
+        background-color: #444;
+        color: #ddd;
+    }
+    .tema-fosc .menu a:hover {
+        background-color: #555;
+    }
+    .tema-fosc .user {
+        background-color: #444;
+    }
+    .tema-fosc .user a {
+        color: #fff;
+    }
+    .tema-fosc .dades, .tema-fosc .login, .tema-fosc .proyects li, .tema-fosc .recount, .tema-fosc .error, .tema-fosc .form-container, .tema-fosc table {
+        background-color: #444;
+        color: #fff;
+        border: 1px solid #666;
+    }
+    .tema-fosc .dades button, .tema-fosc .submit-btn {
+        background-color: #2e7d32;
+    }
+    .tema-fosc .dades button:hover, .tema-fosc .submit-btn:hover {
+        background-color: #276429;
+    }
+    .tema-fosc .dades a {
+        background-color: #d32f2f;
+    }
+    .tema-fosc .dades a:hover {
+        background-color: #b71c1c;
+    }
+    .tema-fosc th {
+        background-color: #2e7d32;
+        color: #fff;
+    }
+    .tema-fosc td {
+        color: #fff;
+        background-color: #444;
+    }
+    .tema-fosc input, .tema-fosc textarea, .tema-fosc select {
+        background-color: #555;
+        color: #fff;
+        border: 1px solid #777;
+    }
+    .tema-fosc input::placeholder, .tema-fosc textarea::placeholder {
+        color: #ccc;
+    }
+    .tema-fosc label {
+        color: #fff;
+    }
+    </style>
+
+</head>
+<body class="tema-{{ session.get('tema', 'clar') }}">    
+    <header>
+        <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="icono">
+        <div class="menu">
+            {% if session["rol"] == "Professor" %}
+            <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='icons/logout.png') }}" title="Sortir de la Secció" alt="Sortir"></a>
+            <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='icons/home.png') }}" title="Pàgina Home" alt="Home"></a>
+            <a href="{{ url_for('registrar') }}"><img src="{{ url_for('static', filename='icons/register.png') }}" title="Registrar" alt="Registrar"></a>
+            <a href="{{ url_for('notes') }}"><img src="{{ url_for('static', filename='icons/grades.png') }}" title="Modificar Notes" alt="Notes"></a>
+            <a href="{{ url_for('mostraprojectes') }}"><img src="{{ url_for('static', filename='icons/projects.png') }}" title="Gestionar Projectes" alt="Projectes"></a>
+            <a href="{{ url_for('projectes') }}"><img src="{{ url_for('static', filename='icons/more.png') }}" title="Nou projecte" alt="Nou projecte"></a>
+            <a href="{{ url_for('indexprojectes') }}"><img src="{{ url_for('static', filename='icons/pdf.png') }}" title="Convertir a PDF" alt="PDF"></a>
+            <a href="{{ url_for('perfil') }}"><img src="{{ url_for('static', filename='icons/key.png') }}" title="Perfil" alt="Perfil"></a>
+            <a href="{{ url_for('listar_usuaris') }}"><img src="{{ url_for('static', filename='icons/list.png') }}" title="Llistar usuaris" alt="Usuaris"></a>
+            <a href="{{ url_for('afegir_comentari') }}"><img src="{{ url_for('static', filename='icons/comment.png') }}" title="Afegir Comentari" alt="Afegir Comentari"></a>
+            {% else %}
+            <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='icons/logout.png') }}" title="Sortir de la Secció" alt="Sortir"></a>
+            <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='icons/home.png') }}" title="Pàgina Home" alt="Home"></a>
+            <a href="{{ url_for('projectes') }}"><img src="{{ url_for('static', filename='icons/more.png') }}" title="Nou projecte" alt="Nou projecte"></a>
+            <a href="{{ url_for('mostraprojectes') }}"><img src="{{ url_for('static', filename='icons/projects.png') }}" title="Gestionar Projectes" alt="Projectes"></a>
+            <a href="{{ url_for('indexprojectes') }}"><img src="{{ url_for('static', filename='icons/pdf.png') }}" title="Convertir a PDF" alt="PDF"></a>
+            <a href="{{ url_for('enviar_revisio') }}"><img src="{{ url_for('static', filename='icons/upload.png') }}" title="Enviar Revisió" alt="Enviar Revisió"></a>
+            <a href="{{ url_for('perfil') }}"><img src="{{ url_for('static', filename='icons/key.png') }}" title="Perfil" alt="Perfil"></a>
+            {% endif %}
+        </div>
+        <div class="user">
+            <img src="{{ url_for('static', filename='icons/user.png') }}" alt="usuario">
+            {% if session["rol"] == "Professor" %}
+            <a>{{ usuario }} | Professor</a>
+            {% else %}
+            <a>{{ usuario }} | Alumne</a>
+            {% endif %}
+        </div>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>@Drets reservats per a l'equip 3 | 2025</p>
+    </footer>
+</body>
+</html>

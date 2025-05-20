@@ -1,62 +1,21 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index Projecte</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
-</head>
-<body>
-    <header>
-        <img src="/static/icons/logo.png" alt="icono"><br>
-        <div class="menu">
-            {% if session["rol"] == "professor"%}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
-            <a href="{{ url_for('registrar') }}"> <img src="/static/icons/register.png" title="Registrar"></a> 
-            <a href="{{ url_for('notes') }}"><img src="/static/icons/grades.png" title="Modificar Notes"></a>
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
-            <a href="{{ url_for('canviarcontra') }}"><img src="/static/icons/key.png" title="Canviar contraseña"></a>
-            <a href="{{ url_for('listar_usuaris') }}"><img src="/static/icons/list.png" title="Llistar usuaris"></a>
-
-            {% else %}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>
-            {% endif %}
-        </div>
-        <div class="user">
-            <img src="/static/icons/user.png" alt="usuario">
-            {% if session["rol"] == "professor"%}
-            <a>{{ usuario }} | Professor</a>
-            {% else %}
-            <a>{{ usuario }} | Alumne</a>
-            {% endif %}
-        </div>
-    </header>
-    <main>
-        <h1>Selecciona un projecte per a descargar</h1>
-        <form method="POST">
-            <label for="proyecto">Selecciona un projecte:</label>
-            <select name="proyecto" id="proyecto" required>  <!-- 'required' assegura que es seleccioni un projecte -->
-                {% for proyecto in proyectos %}
-                    <option value="{{ proyecto.nom_projecte }}" {% if proyecto.nom_projecte == request.form.get('proyecto') %}selected{% endif %}>
-                        {{ proyecto.nom_projecte }}
-                    </option>
-                {% endfor %}
-            </select>
-            <br>
-            
-            <button type="submit">Generar PDF</button>
-        </form>
-        
-        {% if error %}
-            <p style="color:red">{{ error }}</p>  <!-- Mostra l'error si no s'ha seleccionat cap projecte -->
-        {% endif %}
-            
-    </main>
-    <footer>
-        <p>@Drets reservats per a l'equip 3 | 2025</p>
-    </footer>
-</body>
+{% extends "base.html" %}
+{% block title %}Index Projecte{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>Selecciona un projecte per a descarregar</h1>
+    <form method="POST">
+        <label for="proyecto">Selecciona un projecte:</label>
+        <select name="proyecto" id="proyecto" required>
+            <option value="" disabled selected>Selecciona un projecte</option>
+            {% for proyecto in proyectos %}
+                <option value="{{ proyecto.nom_projecte }}">{{ proyecto.nom_projecte }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button type="submit">Generar PDF</button>
+    </form>
+    {% if error %}
+        <p style="color: red">{{ error }}</p>
+    {% endif %}
+</div>
+{% endblock %}

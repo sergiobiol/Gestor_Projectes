@@ -1,94 +1,53 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
-</head>
-<body>
-    <header>
-        <header>
-            <img src="/static/icons/logo.png" alt="icono"><br>
-            <div class="menu">
-                {% if session["rol"] == "professor"%}
-                <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-                <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
-                <a href="{{ url_for('registrar') }}"> <img src="/static/icons/register.png" title="Registrar"></a> 
-                <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-                <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
-                <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-                <a href="{{ url_for('canviarcontra') }}"><img src="/static/icons/key.png" title="Canviar contraseña"></a>
-                <a href="{{ url_for('listar_usuaris') }}"><img src="/static/icons/list.png" title="Llistar usuaris"></a>
+{% extends "base.html" %}
+{% block title %}Notes{% endblock %}
+{% block content %}
+{% if mensaje %}
+    <p style="color: red;">{{ mensaje }}</p>
+{% endif %}
+<h1>Modificar Notes dels Projectes</h1>
+
+<!-- Formulario para filtrar proyectos -->
+<form method="POST">
+    <label for="buscusuari">Usuari:</label>
+    <input type="text" id="buscusuari" name="buscusuari" required>
     
-                {% else %}
-                <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-                <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a> 
-                <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-                <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-                {% endif %}
-            </div>
-            <div class="user">
-                <img src="/static/icons/user.png" alt="usuario">
-                {% if session["rol"] == "professor"%}
-                <a>{{ usuario}} | Professor</a>
-                {% else %}
-                <a>{{ usuario }} | Alumne</a>
-                {% endif %}
-            </div>
-        </header>
-    </header>
-    <main>
-        {% if mensaje %}
-            <p style="color: red;">{{ mensaje }}</p>
-        {% endif %}
-        <h1>Modificar Notes dels Projectes</h1>
+    <label for="buscprojecte">Projecte:</label>
+    <input type="text" id="buscprojecte" name="buscprojecte" required>
 
-        <!-- Formulario para filtrar proyectos -->
-        <form method="POST">
-            <label for="buscusuari">Usuari:</label>
-            <input type="text" id="buscusuari" name="buscusuari" required>
-            
-            <label for="buscprojecte">Projecte:</label>
-            <input type="text" id="buscprojecte" name="buscprojecte" required>
+    <label for="buscasignatura">Asignatura:</label>
+    <input type="text" id="buscasignatura" name="buscasignatura" required>
 
-            <label for="buscasignatura">Asignatura:</label>
-            <input type="text" id="buscasignatura" name="buscasignatura" required>
+    <label for="nota">Nota:</label>
+    <input type="text" id="nota" name="nota" required>
 
-            <label for="nota">Nota:</label>
-            <input type="text" id="nota" name="nota" required>
+    <button type="submit">Modificar Nota</button>
+</form>
 
-            <button type="submit">Modificar Nota</button>
-        </form>
-
-        <h2>Llista de projectes</h2>
-        {% if datos %}
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Projecte</th>
-                        <th>Asignatura</th>
-                        <th>Contingut</th>
-                        <th>Nota</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for proyecto in datos %}
-                        <tr>
-                            <td>{{ proyecto.usuario }}</td>
-                            <td>{{ proyecto.Nomprojecte }}</td>
-                            <td>{{ proyecto.asignatura }}</td>
-                            <td>{{ proyecto.contenido }}</td>
-                            <td>{{ proyecto.notes }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No hi ha projectes per a mostrar</p>
-        {% endif %}
-    </main>
-    <footer>
-        <p>@Drets reservats per a l'equip 3 | 2025</p>
-    </footer>
-</body>
+<h2>Llista de projectes</h2>
+{% if datos %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Projecte</th>
+                <th>Asignatura</th>
+                <th>Contingut</th>
+                <th>Nota</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proyecto in datos %}
+                <tr>
+                    <td>{{ proyecto.usuario }}</td>
+                    <td>{{ proyecto.Nomprojecte }}</td>
+                    <td>{{ proyecto.asignatura }}</td>
+                    <td>{{ proyecto.contenido }}</td>
+                    <td>{{ proyecto.notes }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hi ha projectes per a mostrar</p>
+{% endif %}
+{% endblock %}

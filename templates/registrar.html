@@ -1,95 +1,56 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registre Usuaris</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
-</head>
-<body>  
-    <header>
-        <img src="/static/icons/logo.png" alt="icono"><br>
-        <div class="menu">
-            {% if session["rol"] == "professor"%}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
-            <a href="{{ url_for('notes') }}"><img src="/static/icons/grades.png" title="Modificar Notes"></a> 
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            <a href="{{ url_for('canviarcontra') }}"><img src="/static/icons/key.png" title="Canviar contraseña"></a>
-            <a href="{{ url_for('listar_usuaris') }}"><img src="/static/icons/list.png" title="Llistar usuaris"></a>
+{% extends "base.html" %}
+{% block title %}Registre Usuaris{% endblock %}
+{% block content %}
+<div class="recount">
+    <h2>Registrar usuari</h2>
+    {% if mensaje %}
+    <p style="color: red;">{{ mensaje }}</p>
+    {% endif %}
 
-            {% else %}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a> 
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            {% endif %}
-        </div>
-        <div class="user">
-            <img src="/static/icons/user.png" alt="usuario">
-            {% if session["rol"] == "professor"%}
-            <a>{{ usuario}} | Professor</a>
-            {% else %}
-            <a>{{ usuario }} | Alumne</a>
-            {% endif %}
-        </div>
-    </header>
-    <main>
-        <div class="recount">
-            <h2>Registrar usuari</h2>
-            {% if mensaje %}
-            <p style="color: red;">{{ mensaje }}</p>
-            {% endif %}
+    <!-- Selector de rol -->
+    <form method="get" action="/registrar">
+        <label for="rolusuari">Selecciona el rol:</label>
+        <select id="rolusuari" name="rolusuari" onchange="this.form.submit()">
+            <option value="">-- Selecciona --</option>
+            <option value="alumne" {% if rol == 'alumne' %}selected{% endif %}>Alumne</option>
+            <option value="Professor" {% if rol == 'Professor' %}selected{% endif %}>Professor</option>
+        </select>
+    </form>
+
+    {% if rol %}
+    <!-- Formulario de registro -->
+    <form method="post" action="/registrar?rolusuari={{ rol }}">
+        <input type="hidden" name="rolusuari" value="{{ rol }}">
         
-            <!-- Selector de rol -->
-            <form method="get" action="/registrar">
-                <label for="rolusuari">Selecciona el rol:</label>
-                <select id="rolusuari" name="rolusuari" onchange="this.form.submit()">
-                    <option value="">-- Selecciona --</option>
-                    <option value="alumne" {% if rol == 'alumne' %}selected{% endif %}>Alumne</option>
-                    <option value="professor" {% if rol == 'professor' %}selected{% endif %}>Professor</option>
-                </select>
-            </form>
+        <label>Usuari:</label>
+        <input type="text" name="usuario" required><br><br>
 
-            {% if rol %}
-            <!-- Formulario de registro -->
-            <form method="post" action="/registrar?rolusuari={{ rol }}">
-                <input type="hidden" name="rolusuari" value="{{ rol }}">
-                
-                <label>Usuari:</label>
-                <input type="text" name="usuario" required><br><br>
+        <label>Contraseña:</label>
+        <input type="password" name="contrasena" required><br><br>
 
-                <label>Contraseña:</label>
-                <input type="password" name="contrasena" required><br><br>
+        <label>Nom:</label>
+        <input type="text" name="nombre" required><br><br>
 
-                <label>Nom:</label>
-                <input type="text" name="nombre" required><br><br>
+        <label>Cognom:</label>
+        <input type="text" name="apellido" required><br><br>
 
-                <label>Cognom:</label>
-                <input type="text" name="apellido" required><br><br>
+        <label>Edat:</label>
+        <input type="number" name="edad" required><br><br>
 
-                <label>Edat:</label>
-                <input type="number" name="edad" required><br><br>
+        <label>Teléfon:</label>
+        <input type="text" name="telefono" required><br><br>
 
-                <label>Teléfon:</label>
-                <input type="text" name="telefono" required><br><br>
+        {% if rol == 'alumne' %}
+            <p>El Identificador del Alumno se asignará automáticamente</p>
+            <input type="hidden" name="Professor" value="0">
+        {% else %}
+            <input type="hidden" name="Professor" value="1">
+        {% endif %}
 
-                {% if rol == 'alumne' %}
-                    <p>El Identificador del Alumno se asignará automáticamente</p>
-                    <input type="hidden" name="professor" value="0">
-                {% else %}
-                    <input type="hidden" name="professor" value="1">
-                {% endif %}
+        <button type="submit">Registrar {{ rol.capitalize() }}</button>
+    </form>
+    {% endif %}
 
-                <button type="submit">Registrar {{ rol.capitalize() }}</button>
-            </form>
-            {% endif %}
-
-            </form>
-        </div>
-    </main>
-    <footer>
-        <p>@Drets reservats per a l'equip 3 | 2025</p>
-    </footer>
-</body>
+    </form>
+</div>
+{% endblock %}

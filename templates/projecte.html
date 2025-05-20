@@ -1,37 +1,31 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mostra Projecte</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
-</head>
-<header>
-    <img src="/static/icons/logo.png" alt="icono">
-</header>
-<body>
-    <main>
-        <h1>Detalls del Projecte: {{ proyecto[0] }}</h1>
-        <p><strong>Contenido:</strong> {{ proyecto[1] }}</p>
-        <form action="{{ url_for('projecte', proyecto=proyecto[0]) }}" method="POST">
-            <label for="font_name">Selecciona la font:</label>
-            <select name="font_name" id="font_name">
-                <option value="Helvetica">Helvetica</option>
-                <option value="Times-Roman">Times New Roman</option>
-                <option value="Courier">Courier</option>
-            </select>
-            <br>
+{% extends "base.html" %}
+{% block title %}Mostra Projecte{% endblock %}
+{% block content %}
+<h1>Detalls del Projecte: {{ proyecto.nom_projecte }}</h1>
+<p>Assignatura: {{ proyecto.asignatura }}</p>
+<p>Estat: {{ proyecto.estat }}</p>
+{% if proyecto.nota is not none %}
+    <p>Nota: {{ proyecto.nota }}</p>
+{% endif %}
 
-            <label for="title_size">Mida de la lletra (Títol):</label>
-            <input type="number" name="title_size" id="title_size" min="8" max="48" value="16"><br>
-        
-            <label for="content_size">Mida de la lletra (Contingut):</label>
-            <input type="number" name="content_size" id="content_size" min="8" max="48" value="12"><br>
-        
-            <br>    
-            <button type="submit">Descarregar PDF</button>
-        </form>        
-    </main>
-    <footer>
-        <p>@Drets reservats per a l'equip 3 | 2025</p>
-    </footer>
-</body>
+<form method="POST" action="">
+    <label for="font_name">Selecciona una font:</label>
+    <select name="font_name" id="font_name">
+        <option value="Helvetica">Helvetica</option>
+        <option value="Times-Roman">Times New Roman</option>
+        <option value="Courier">Courier</option>
+    </select>
+    <br>
+
+    <label for="title_size">Mida de la lletra (Títol):</label>
+    <input type="number" name="title_size" id="title_size" min="8" max="48" value="16"><br>
+
+    <label for="content_size">Mida de la lletra (Contingut):</label>
+    <input type="number" name="content_size" id="content_size" min="8" max="48" value="12"><br>
+
+    <!-- Camp ocult per passar el títol del projecte -->
+    <input type="hidden" name="proyecto" value="{{ proyecto.nom_projecte }}">
+
+    <button type="submit">Descarregar PDF</button>
+</form>
+{% endblock %}

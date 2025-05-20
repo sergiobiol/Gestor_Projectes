@@ -1,2 +1,4 @@
-flask
+Flask
 reportlab
+mariadb
+pymongo

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Perfil{% endblock %}
+{% block content %}
+<div class="dades">
+    <h2>Perfil de l'usuari</h2>
+    {% if error %}
+        <p class="mensaje error">{{ error }}</p>
+    {% endif %}
+    <div class="perfil-info">
+        {% if foto_perfil %}
+            <img src="data:image/jpeg;base64,{{ foto_perfil }}" alt="Foto de perfil" style="width: 150px; height: 150px; border-radius: 50%;">
+        {% else %}
+            <p>No hi ha foto de perfil</p>
+        {% endif %}
+        <p><strong>Nom:</strong> {{ usuari_data.nom if usuari_data.nom else 'No definit' }}</p>
+        <p><strong>Usuari:</strong> {{ usuari_data.usuari }}</p>
+        <p><strong>Telèfon:</strong> {{ usuari_data.telefon if usuari_data.telefon else 'No definit' }}</p>
+        <p><strong>Color favorit:</strong> {{ dades_personalitzables.color_favorit if dades_personalitzables.color_favorit else 'No definit' }}</p>
+        <p><strong>Descripció:</strong> {{ dades_personalitzables.descripcio if dades_personalitzables.descripcio else 'No definit' }}</p>
+        <p><strong>Tema actual:</strong> {% if session.get('tema', 'clar') == 'clar' %}Clar{% else %}Fosc{% endif %}</p>
+    </div>
+    <h3>Editar dades</h3>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="nom">Nom:</label>
+        <input type="text" id="nom" name="nom" value="{{ usuari_data.nom if usuari_data.nom else '' }}" placeholder="Introdueix el teu nom">
+        <br><br>
+        <label for="telefon">Telèfon:</label>
+        <input type="text" id="telefon" name="telefon" value="{{ usuari_data.telefon if usuari_data.telefon else '' }}" placeholder="Introdueix el teu telèfon">
+        <br><br>
+        <label for="contrasenya_antiga">Contrasenya antiga (només si vols canviar-la):</label>
+        <input type="password" id="contrasenya_antiga" name="contrasenya_antiga" placeholder="Contrasenya antiga">
+        <br><br>
+        <label for="nova_contrasenya">Nova contrasenya:</label>
+        <input type="password" id="nova_contrasenya" name="nova_contrasenya" placeholder="Nova contrasenya">
+        <br><br>
+        <label for="color_favorit">Color favorit:</label>
+        <input type="text" id="color_favorit" name="color_favorit" value="{{ dades_personalitzables.color_favorit if dades_personalitzables.color_favorit else '' }}" placeholder="Introdueix el teu color favorit">
+        <br><br>
+        <label for="descripcio">Descripció:</label>
+        <textarea id="descripcio" name="descripcio" placeholder="Escriu una breu descripció">{{ dades_personalitzables.descripcio if dades_personalitzables.descripcio else '' }}</textarea>
+        <br><br>
+        <label for="foto">Foto de perfil:</label>
+        <input type="file" id="foto" name="foto" accept="image/*">
+        <br><br>
+        <button type="submit">Actualitzar</button>
+        <input type="hidden" name="canviar_tema" value="true">
+        <button type="submit">Canviar tema</button>
+        <a href="{{ url_for('mostraprojectes') }}">Tornar enrere</a>
+    </form>
+</div>
+{% endblock %}

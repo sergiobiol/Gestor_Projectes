@@ -1,79 +1,43 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Llista de usuaris</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
-</head>
+<!DOCTYPE html>
+<html lang="ca">
+{% extends "base.html" %}
 
-<body>
-    <header>
-        <img src="/static/icons/logo.png" alt="icono"><br>
-        <div class="menu">
-            {% if session["rol"] == "professor"%}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
-            <a href="{{ url_for('registrar') }}"> <img src="/static/icons/register.png" title="Registrar"></a> 
-            <a href="{{ url_for('notes') }}"><img src="/static/icons/grades.png" title="Modificar Notes"></a>
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            <a href="{{ url_for('canviarcontra') }}"><img src="/static/icons/key.png" title="Canviar contraseña"></a>
+{% block title %}Llista de usuaris{% endblock %}
 
-            {% else %}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a> 
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            {% endif %}
-        </div>
-        <div class="user">
-            <img src="/static/icons/user.png" alt="usuario">
-            {% if session["rol"] == "professor"%}
-            <a>{{ usuario}} | Professor</a>
-            {% else %}
-            <a>{{ usuario}} | Alumne</a>
-            {% endif %}
-        </div>
-    </header>
-    <main> 
-        <h2>Llistat de usuaris</h2>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Login</th>
-                    <th>Usuari</th>
-                    <th>Contrasenya</th>
-                    <th>Nom</th>
-                    <th>Cognom</th>
-                    <th>Edad</th>
-                    <th>Telèfon</th>
-                    <th>Rol</th>
-                    <th>Plaça Fixa</th>
-                    <th>Identificador Alumne</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuaris %}
-                <tr>
-                    <td>{{ usuario.get("usuario", "-") }}</td>
-                    <td>{{ usuario.get("usuario", "-") }}</td>
-                    <td>********</td>  <!-- No mostramos la contraseña -->
-                    <td>{{ usuario.get("nom", "-") }}</td>
-                    <td>{{ usuario.get("cognom", "-") }}</td>
-                    <td>{{ usuario.get("edat", "-") }}</td>
-                    <td>{{ usuario.get("telefon", "-") }}</td>
-                    <td>{{ usuario.get("rol", "-") }}</td>
-                    <td>{{ usuario.get("placa_fixa", "-") }}</td>
-                    <td>{{ usuario.get("identificador_alumne", "-") }}</td>
-                </tr>
-                {% endfor %}
-
-            </tbody>
-        </table>
-    </main>
-    <footer>
-        <p>@Drets reservats per a l'equip 3 | 2025</p>
-    </footer>
-</body>
+{% block content %}
+<main>
+    <h2>Llistat de usuaris</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Login</th>
+                <th>Usuari</th>
+                <th>Contrasenya</th>
+                <th>Nom</th>
+                <th>Cognom</th>
+                <th>Edad</th>
+                <th>Telèfon</th>
+                <th>Rol</th>
+                <th>Plaça Fixa</th>
+                <th>Identificador Alumne</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuaris %}
+            <tr>
+                <td>{{ usuario.get("usuario", "-") }}</td>
+                <td>{{ usuario.get("usuario", "-") }}</td>
+                <td>********</td> <!-- No mostramos la contraseña -->
+                <td>{{ usuario.get("nom", "-") }}</td>
+                <td>{{ usuario.get("cognom", "-") }}</td>
+                <td>{{ usuario.get("edat", "-") }}</td>
+                <td>{{ usuario.get("telefon", "-") }}</td>
+                <td>{{ usuario.get("rol", "-") }}</td>
+                <td>{{ usuario.get("placa_fixa", "-") }}</td>
+                <td>{{ usuario.get("identificador_alumne", "-") }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

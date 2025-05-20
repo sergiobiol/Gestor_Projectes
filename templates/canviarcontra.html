@@ -1,61 +1,25 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canviar Contrasenya</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="static\icons\logo.png" type="image/x-icon">
-</head>
-<body>
-    <header>
-        <img src="/static/icons/logo.png" alt="icono"><br>
-        <div class="menu">
-            {% if session["rol"] == "professor"%}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('home') }}"> <img src="/static/icons/home.png" title="Pàgina Home"></a> 
-            <a href="{{ url_for('registrar') }}"> <img src="/static/icons/register.png" title="Registrar"></a> 
-            <a href="{{ url_for('notes') }}"><img src="/static/icons/grades.png" title="Modificar Notes"></a>
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a>
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            <a href="{{ url_for('listar_usuaris') }}"><img src="/static/icons/list.png" title="Llistar usuaris"></a>
-
-            {% else %}
-            <a href="{{ url_for('logout') }}"><img src="/static/icons/logout.png" title="Sortir de la Secció"></a>
-            <a href="{{ url_for('projectes') }}"><img src="/static/icons/more.png" title="Nou projecte"></a> 
-            <a href="{{ url_for('mostraprojectes') }}"><img src="/static/icons/projects.png" title="Gestionar Projectes"></a>  
-            <a href="{{ url_for('indexprojectes') }}"><img src="/static/icons/pdf.png" title="Convertir a PDF"></a>
-            {% endif %}
+{% extends "base.html" %}
+{% block title %}Canviar Contrasenya{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>Canviar Contrasenya</h1>
+    {% if mensaje %}
+        <p class="mensaje error">{{ mensaje }}</p>
+    {% endif %}
+    <form method="POST" class="comment-form">
+        <div class="form-group">
+            <label for="usuari">Usuari:</label>
+            <input type="text" id="usuari" name="usuari" required>
         </div>
-        <div class="user">
-            <img src="/static/icons/user.png" alt="usuario">
-            {% if session["rol"] == "professor"%}
-            <a>{{ usuario}} | Professor</a>
-            {% else %}
-            <a>{{ usuario }} | Alumne</a>
-            {% endif %}
+        <div class="form-group">
+            <label for="nova">Contrasenya nova:</label>
+            <input type="password" id="nova" name="nova" required>
         </div>
-    </header>
-    <main>
-        <div class="form">
-        <h2>Canviar Contrasenya</h2>
-        {% if mensaje %}
-            <p style="color: red;">{{ mensaje }}</p>
-        {% endif %}
-        <form method="POST">
-            <label>Usuari:<i class="fa-solid fa-house"></i></label>
-            <input type="text" name="usuari" required>
-            <br>
-            <label>Contrasenya nova:<i class="fa-solid fa-house"></i></label>
-            <input type="text" name="nova" required>
-            <br>
-            <label>Confirmar contrasenya:</label>
-            <input type="password" name="confirmar" required>
-            <br>
-            <button type="submit">Ingresar</button>
-        </form>
+        <div class="form-group">
+            <label for="confirmar">Confirmar contrasenya:</label>
+            <input type="password" id="confirmar" name="confirmar" required>
         </div>
-    </main>
-    <footer>
-        <p>@Drets reservats per a l'equip 3 | 2025</p>
-    </footer>
-</body>
+        <button type="submit" class="submit-btn">Canviar Contrasenya</button>
+    </form>
+</div>
+{% endblock %}

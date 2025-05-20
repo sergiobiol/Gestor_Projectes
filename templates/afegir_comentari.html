@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Afegir Comentari{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>Afegir Comentari a un Projecte</h1>
+    {% if mensaje %}
+        <p class="mensaje {% if 'correctament' in mensaje %}success{% else %}error{% endif %}">{{ mensaje }}</p>
+    {% endif %}
+    <form method="POST" class="comment-form">
+        <div class="form-group">
+            <label for="projecte_id">Projecte:</label>
+            <select id="projecte_id" name="projecte_id" required>
+                <option value="">Selecciona un projecte</option>
+                {% for projecte in projectes %}
+                <option value="{{ projecte.id }}">{{ projecte.nom_projecte }} ({{ projecte.assignatura }} - {{ projecte.usuari }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="text_comentari">Comentari:</label>
+            <textarea id="text_comentari" name="text_comentari" rows="5" placeholder="Escriu el teu comentari aquí..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Afegir Comentari</button>
+    </form>
+</div>
+{% endblock %}
